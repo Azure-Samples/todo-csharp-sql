@@ -1,57 +1,232 @@
-# Project Name
+# To Do Application with C# and Azure SQL
 
-(short, 1-3 sentenced, description of the project)
+This repo contains a complete sample To Do application that demonstrates how to build an Azure solution using C#, Azure SQL for storage, and Azure Monitor for monitoring and logging.
 
-## Features
+## ⛔ IMPORTANT
 
-This project framework provides the following features:
+> ### Please keep all repositories and templates you create on GitHub.com *private*
 
-* Feature 1
-* Feature 2
-* ...
+## To Do Application
 
-## Getting Started
+Here's the web frontend of this To Do application:
+
+!["To Do Web App"](assets/web.png)
+
+## Azure Resources
+
+This application is comprised of the following Azure resources:
+
+- Azure App Services - To host the To Do app website and API.
+- Azure SQL - To store the To Do data in a database.
+- Azure Monitor - A cloud instrumentation service to help you monitor your application.
+
+!["Application"](assets/app.png)
+
+## Setup
+
+To run this project, you first need to setup your local development environment and get the code.
+
+> NOTE: Support for GitHub Codespaces and VS Code Remote Containers (DevContainers) is coming soon.
 
 ### Prerequisites
 
-(ideally very short, if any)
+Please install the following prerequisites on your local machine.
 
-- OS
-- Library version
-- ...
+1. Install [Git](https://git-scm.com/)
+1. Install [GitHub CLI](https://github.com/cli/cli)
+1. Install [.NET SDK 6.0](https://dotnet.microsoft.com/en-us/download/dotnet/6.0)
+1. Install [Node.js with npm (v 16.13.1 LTS)](https://nodejs.org/)
+1. Install [Azure CLI (v 2.30.0+)](https://docs.microsoft.com/cli/azure/install-azure-cli)
+1. Install Azure Dev CLI Extension
 
-### Installation
+    This allows you to run all of the `az dev` commands that you will see below.
 
-(ideally very short)
+    Run this command to install it:
 
-- npm install [package name]
-- mvn install
-- ...
+    ```bash
+    az extension add --source https://azdevcliextstorage.blob.core.windows.net/whls/azure_dev-0.0.1-py2.py3-none-any.whl
+    ```
 
-### Quickstart
-(Add steps to get up and running quickly)
+### Project Folder
 
-1. git clone [repository clone url]
-2. cd [respository name]
-3. ...
+You will need an empty folder on your computer to house the project files.  
 
+1. Open your favorite terminal, create a new folder, and set your current directory to that newly created folder.
 
-## Demo
+    ```bash
+    mkdir {your-unique-project-folder-name}
+    cd {your-unique-project-folder-name}
+    ```
 
-A demo app is included to show how to use the project.
+### Code
 
-To run the demo, follow these steps:
+Run the following command to get a local copy of this repository:
 
-(Add steps to start up the demo)
+```bash
+az dev init --template todo-csharp-sql
+```
 
-1.
-2.
-3.
+Now that you have your environment setup, you are ready to continue.
 
-## Resources
+## Quickstart
 
-(Any additional resources or related projects)
+### Getting the application up and running in Azure
 
-- Link to supporting information
-- Link to similar sample
-- ...
+The fastest possible way for you to get this app up and running on Azure is to use the `az dev up` command. It will provision all the Azure resources and deploy the code you need to run the application.
+
+Run the following command to provision, build, and deploy this application to Azure in a single step.
+
+```bash
+az dev up
+```
+>NOTE: This may take a while to complete as it performs both the `az dev provision` (creates Azure services) and `az dev deploy` (deploys code) steps.
+
+This will print a URL to the To Do API application and a URL to the To Do web application. Click the web application URL to launch the To Do app.
+
+Click the Azure Portal link to view resources provisioned.
+
+!["Application Architecture"](assets/azdevupurls.png)
+
+### CI/CD
+
+This template includes a GitHub Actions pipeline configuration file that will deploy your application whenever code is pushed to the main branch. You can find that pipeline file here: `.github/workflows`
+
+Setting up this pipeline requires you to give GitHub permission to deploy to Azure on your behalf, which is done via a Service Principal. That information is stored in the `AZURE_CREDENTIALS` secrets/variables on GitHub.
+
+The Azure Dev CLI contains a command (`az dev cicd`) that helps you get everything you need to configure a CI/CD pipeline.
+
+Run the following command to setup CI/CD for GitHub
+
+```bash
+az dev cicd
+```
+
+You can view the GitHub action in your repo.
+
+> GitHub -> Azure Open ID Connect (OIDC) is not yet supported.
+
+### Setting up local development environment
+
+Follow the steps below to allow local application to connect to Azure SQL:
+
+1. Determine your external IP address.
+
+    ```bash
+    > curl http://inet-ip.info
+    <your_ip>
+    ```
+
+2. Add a firewall rule allowing access to Azure SQL instance. Replace `<base_name>` with a value used for resource provisioning.
+
+    ```bash
+     az sql server firewall-rule create --name "local dev" --server "<base_name>sql" -g "<base_name>rg" --start-ip-address <your_ip> --end-ip-address <your_ip>
+    ```
+
+3. Determine your user's ObjectId.
+
+    ```bash
+    az ad signed-in-user show --query objectId
+    <your_objectId>
+    ```
+
+4. Assign the current users as Azure SQL administrator.
+
+    ```bash
+    az sql server ad-admin update --object-id <your_objectId> --server "<base_name>sql" -g "<base_name>rg" --administrator-name=ActiveDirectory
+    ```
+
+### Run
+
+Now that your Azure resources have been provisioned, and CI/CD pipeline is set up, you can edit the code, and run it locally. To see this in action, you will make a simple modification to the code.
+
+1. Open `header.tsx` in `/src/web/src/layout`
+1. Locate the line `<Text variant="xLarge">ToDo</Text>` and update **ToDo** to say **myTodo** to update the application label.
+1. Save the file.
+
+Now, run the following command to run the application locally:
+
+```bash
+az dev run
+```
+
+This will print a URL that you can click to launch the application. 
+
+If everything looks good, commit your change and push to GitHub to automatically kick off the GitHub Action pipeline to deploy the update.
+
+### Monitor
+
+To help with monitoring applications, the Azure Dev CLI provides a `monitor` command to help you get to the various Application Insights dashboards.
+
+#### Overview Dashboard
+
+Run the following command to open the "Overview" dashboard:
+
+```bash
+az dev monitor --overview
+```
+
+#### Live Metrics Dashboard
+
+Run the following command to open the "Live Metrics" dashboard:
+
+```bash
+az dev monitor --live
+```
+
+#### Logs Dashboard
+
+Run the following command to open the "Logs" dashboard:
+
+```bash
+az dev monitor --logs
+```
+
+### Clean up
+
+To delete your Azure resources for this project you can run the `az dev down` command:
+
+```bash
+az dev down
+```
+
+>NOTE: This may take a while to complete.
+
+## Working with addtional az dev CLI commands
+
+The following section will introduce you to additional `az dev` CLI commands that you can leverage.
+
+### Provision
+
+>NOTE: If you chose to run the `az dev up` command you can skip the `provision` and `deploy` command since `az dev up` performs both steps.
+
+Before you can run this application, you will need to provision your resources to Azure.  
+
+Run the following command to provision your Azure resources.
+
+```bash
+az dev provision
+```
+
+### Deploy
+
+Run the following command to deploy the application to Azure:
+
+```bash
+az dev deploy
+```
+
+This will print a URL that you can click to launch the application.
+
+### Test
+
+The Azure Dev CLI includes sample tests so that you can quickly verify that the application is behaving as expected.
+
+>NOTE: COMING SOON...
+
+## Additional Resources
+
+### Learn more about the Azure resources deployed in this solution
+
+- [Azure App Services](https://docs.microsoft.com/azure/app-service/)
+- [Azure SQL](https://azure.microsoft.com/products/azure-sql/)
+- [Azure Monitor](https://docs.microsoft.com/azure/azure-monitor/)

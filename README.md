@@ -116,10 +116,10 @@ Follow the steps below to allow local application to connect to Azure SQL:
     <your_ip>
     ```
 
-2. Add a firewall rule allowing access to Azure SQL instance. Replace `<base_name>` with a value used for resource provisioning.
+2. Add a firewall rule allowing access to Azure SQL instance. Replace `<BASENAME>` with a value used for resource provisioning.
 
     ```bash
-     az sql server firewall-rule create --name "local dev" --server "<base_name>sql" -g "<base_name>rg" --start-ip-address <your_ip> --end-ip-address <your_ip>
+     az sql server firewall-rule create --name "local dev" --server "<BASENAME>sql" -g "<BASENAME>rg" --start-ip-address <your_ip> --end-ip-address <your_ip>
     ```
 
 3. Determine your user's ObjectId.
@@ -132,7 +132,7 @@ Follow the steps below to allow local application to connect to Azure SQL:
 4. Assign the current users as Azure SQL administrator.
 
     ```bash
-    az sql server ad-admin update --object-id <your_objectId> --server "<base_name>sql" -g "<base_name>rg" --administrator-name=ActiveDirectory
+    az sql server ad-admin update --object-id <your_objectId> --server "<BASENAME>sql" -g "<BASENAME>rg" --administrator-name=ActiveDirectory
     ```
 
 ### Run

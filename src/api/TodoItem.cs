@@ -13,7 +13,7 @@ public class TodoItem
     [Key]
     public Guid? Id { get; set; }
 
-    public TodoList List { get; set; }
+    public TodoList? List { get; set; }
     public Guid ListId { get; set; }
     public string Name { get; set; }
     public string? Description { get; set; }

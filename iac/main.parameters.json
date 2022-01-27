@@ -7,9 +7,6 @@
     },
     "location": {
       "value": "${LOCATION}"
-    },
-    "principalId": {
-      "value": "${PRINCIPAL_ID}"
     }
   }
 }

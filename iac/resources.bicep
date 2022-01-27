@@ -1,6 +1,5 @@
 param basename string
 param location string
-param principalId string = ''
 
 resource web 'Microsoft.Web/sites@2021-01-15' = {
   name: '${basename}web'

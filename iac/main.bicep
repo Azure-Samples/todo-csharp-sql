@@ -9,9 +9,6 @@ param basename string
 @description('Primary location for all resources')
 param location string
 
-@description('Id of the user or app to assign application roles')
-param principalId string = ''
-
 resource rg 'Microsoft.Resources/resourceGroups@2020-06-01' = {
   name: '${basename}rg'
   location: location
@@ -23,7 +20,6 @@ module resources './resources.bicep' = {
   params: {
     basename: toLower(basename)
     location: location
-    principalId: principalId
   }
 }
 

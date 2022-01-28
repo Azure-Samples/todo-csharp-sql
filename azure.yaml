@@ -1,11 +1,11 @@
 name: todo-csharp-mongo
 services:
   - name: ${BASENAME}api
-    project: ../src/api
+    project: src/api
     language: csharp
     type: app
   - name: ${BASENAME}web
-    project: ../src/web
+    project: src/web
     dist: build
     language: js
     type: app

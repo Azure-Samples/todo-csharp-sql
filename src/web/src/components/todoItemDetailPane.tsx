@@ -39,6 +39,7 @@ export const TodoItemDetailPane: FC<TodoItemDetailPaneProps> = (props: TodoItemD
         };
 
         props.onEdit(todoItem);
+        props.onCancel();
     };
 
     const cancelEdit = (evt: MouseEvent<HTMLButtonElement>) => {

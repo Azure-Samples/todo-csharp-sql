@@ -94,7 +94,7 @@ const TodoItemListPane: FC<TodoItemListPaneProps> = (props: TodoItemListPaneProp
         },
         {
             key: TodoItemState.InProgress,
-            name: 'Inprogress',
+            name: 'In Progress',
             count: items.filter(i => i.state === TodoItemState.InProgress).length,
             startIndex: items.findIndex(i => i.state === TodoItemState.InProgress)
         },

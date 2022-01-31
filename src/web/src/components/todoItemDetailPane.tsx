@@ -57,7 +57,7 @@ export const TodoItemDetailPane: FC<TodoItemDetailPaneProps> = (props: TodoItemD
 
     const todoStateOptions: IDropdownOption[] = [
         { key: TodoItemState.Todo, text: 'To Do' },
-        { key: TodoItemState.InProgress, text: 'Inprogress' },
+        { key: TodoItemState.InProgress, text: 'In Progress' },
         { key: TodoItemState.Done, text: 'Done' },
     ];
 

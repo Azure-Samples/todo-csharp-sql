@@ -44,7 +44,7 @@ Please install the following prerequisites on your local machine.
     Run this command to install it:
 
     ```bash
-    az extension add --source https://azdevcliextstorage.blob.core.windows.net/whls/azure_dev-0.0.2-py3-none-any.whl -y
+    az extension add --source https://azdevcliextstorage.blob.core.windows.net/whls/azure_dev-0.0.1-py2.py3-none-any.whl
     ```
 
 ### Project Folder
@@ -70,27 +70,88 @@ Now that you have your environment setup, you are ready to continue.
 
 ## Quickstart
 
-### Provision
+### Getting the application up and running in Azure
 
-Before you can run this application, you will need to provision your resources to Azure.
+The fastest possible way for you to get this app up and running on Azure is to use the `az dev up` command. It will provision all the Azure resources and deploy the code you need to run the application.
 
-Run the following command to provision your Azure resources.
-
-```bash
-az dev provision
-```
-
-### Deploy
-
-Run the following command to deploy the application to Azure:
+Run the following command to provision, build, and deploy this application to Azure in a single step.
 
 ```bash
-az dev deploy
+az dev up
 ```
+>NOTE: This may take a while to complete as it performs both the `az dev provision` (creates Azure services) and `az dev deploy` (deploys code) steps.
 
-This will print a URL that you can click to launch the application.
+This will print a URL to the To Do API application and a URL to the To Do web application. Click the web application URL to launch the To Do app.
+
+Click the Azure Portal link to view resources provisioned.
 
 !["Application Architecture"](assets/azdevupurls.png)
+
+DevOps Workflow
+
+This template includes a GitHub Actions workflow configuration file that will deploy your application whenever code is pushed to the main branch. You can find that workflow file here: `.github/workflows`
+
+Setting up this workflow requires you to give GitHub permission to deploy to Azure on your behalf, which is done via a Service Principal. That information is stored in the `AZURE_CREDENTIALS` secrets/variables on GitHub.
+
+The Azure Dev CLI contains a command (`az dev workflow create`) that helps you get everything you need to configure a DevOps workflow.
+
+Run the following command to setup DevOps workflow for GitHub
+
+```bash
+az dev workflow create
+```
+
+You can view the GitHub action in your repo.
+
+> GitHub -> Azure Open ID Connect (OIDC) is not yet supported.
+
+### Setting up local development environment
+
+Follow the steps below to allow local application to connect to Azure SQL:
+
+1. Determine your external IP address.
+
+    ```bash
+    > curl http://inet-ip.info
+    <your_ip>
+    ```
+
+2. Add a firewall rule allowing access to Azure SQL instance. Replace `<BASENAME>` with a value used for resource provisioning.
+
+    ```bash
+     az sql server firewall-rule create --name "local dev" --server "<BASENAME>sql" -g "<BASENAME>rg" --start-ip-address <your_ip> --end-ip-address <your_ip>
+    ```
+
+3. Determine your user's ObjectId.
+
+    ```bash
+    az ad signed-in-user show --query objectId
+    <your_objectId>
+    ```
+
+4. Assign the current users as Azure SQL administrator.
+
+    ```bash
+    az sql server ad-admin update --object-id <your_objectId> --server "<BASENAME>sql" -g "<BASENAME>rg" --administrator-name=ActiveDirectory
+    ```
+
+### Run
+
+Now that your Azure resources have been provisioned, and DevOps workflow is set up, you can edit the code, and run it locally. To see this in action, you will make a simple modification to the code.
+
+1. Open `header.tsx` in `/src/web/src/layout`
+1. Locate the line `<Text variant="xLarge">ToDo</Text>` and update **ToDo** to say **myTodo** to update the application label.
+1. Save the file.
+
+Now, run the following command to run the application locally:
+
+```bash
+az dev run
+```
+
+This will print a URL that you can click to launch the application. 
+
+If everything looks good, commit your change and push to GitHub to automatically kick off the GitHub Action workflow to deploy the update.
 
 ### Monitor
 
@@ -122,26 +183,50 @@ az dev monitor --logs
 
 ### Clean up
 
-Run the following command to delete the application from your Azure subscription.
+To delete your Azure resources for this project you can run the `az dev down` command:
 
 ```bash
-az dev deprovision
+az dev down
 ```
 
-Run the following command to remove the Azure Dev CLI extension:
+>NOTE: This may take a while to complete.
+
+## Working with addtional az dev CLI commands
+
+The following section will introduce you to additional `az dev` CLI commands that you can leverage.
+
+### Provision
+
+>NOTE: If you chose to run the `az dev up` command you can skip the `provision` and `deploy` command since `az dev up` performs both steps.
+
+Before you can run this application, you will need to provision your resources to Azure.  
+
+Run the following command to provision your Azure resources.
 
 ```bash
-az extension remove --name azure-dev
+az dev provision
 ```
 
-### Up
+### Deploy
 
-Coming soon...
+Run the following command to deploy the application to Azure:
 
-### Pipelines
+```bash
+az dev deploy
+```
 
-Coming soon...
+This will print a URL that you can click to launch the application.
 
-### Run/Debug/Test
+### Test
 
-Coming soon...
+The Azure Dev CLI includes sample tests so that you can quickly verify that the application is behaving as expected.
+
+>NOTE: COMING SOON...
+
+## Additional Resources
+
+### Learn more about the Azure resources deployed in this solution
+
+- [Azure App Services](https://docs.microsoft.com/azure/app-service/)
+- [Azure SQL](https://azure.microsoft.com/products/azure-sql/)
+- [Azure Monitor](https://docs.microsoft.com/azure/azure-monitor/)

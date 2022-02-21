@@ -1,5 +1,6 @@
 import { Reducer } from "react";
 import { TodoActions } from "../actions/common";
+import { changeReducer } from "./changeReducer";
 import { listsReducer } from "./listsReducer";
 import { selectedItemReducer } from "./selectedItemReducer";
 import { selectedListReducer } from "./selectedListReducer";
@@ -18,4 +19,5 @@ export default combineReducers({
     lists: listsReducer,
     selectedList: selectedListReducer,
     selectedItem: selectedItemReducer,
+    change:changeReducer
 });

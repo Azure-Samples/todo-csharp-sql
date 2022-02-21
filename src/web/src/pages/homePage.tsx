@@ -4,10 +4,12 @@ import TodoItemListPane from '../components/todoItemListPane';
 import { TodoItem, TodoItemState } from '../models';
 import * as itemActions from '../actions/itemActions';
 import * as listActions from '../actions/listActions';
+import * as toggleAction from '../actions/toggleAction';
 import { TodoContext } from '../components/todoContext';
 import { AppContext } from '../models/applicationState';
 import { ItemActions } from '../actions/itemActions';
 import { ListActions } from '../actions/listActions';
+import { ToggleActions } from '../actions/toggleAction';
 import { stackItemPadding, stackPadding, titleStackStyles } from '../ux/styles';
 import { useNavigate, useParams } from 'react-router-dom';
 import { bindActionCreators } from '../actions/actionCreators';
@@ -20,7 +22,10 @@ const HomePage = () => {
     const actions = useMemo(() => ({
         lists: bindActionCreators(listActions, appContext.dispatch) as unknown as ListActions,
         items: bindActionCreators(itemActions, appContext.dispatch) as unknown as ItemActions,
+        group: bindActionCreators(toggleAction, appContext.dispatch) as unknown as ToggleActions,
     }), [appContext.dispatch]);
+
+    const groupStates = {states:appContext.state.groupStates}
 
     // Create default list of does not exist
     useEffect(() => {
@@ -87,6 +92,11 @@ const HomePage = () => {
         }
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const onGroupStateChange = (group?: any) => {
+        groupStates.states = actions.group.change(group);
+    }
+
     const iconProps: IIconProps = {
         iconName: 'More',
         styles: {
@@ -127,13 +137,15 @@ const HomePage = () => {
             </Stack.Item>
             <Stack.Item tokens={stackItemPadding}>
                 <TodoItemListPane
+                    groupStates={groupStates.states}
                     list={appContext.state.selectedList}
                     items={appContext.state.selectedList?.items}
                     selectedItem={appContext.state.selectedItem}
                     onSelect={onItemSelected}
                     onCreated={onItemCreated}
                     onComplete={onItemCompleted}
-                    onDelete={onItemDeleted} />
+                    onDelete={onItemDeleted}
+                    onGroupChange={onGroupStateChange} />
             </Stack.Item>
         </Stack >
     );

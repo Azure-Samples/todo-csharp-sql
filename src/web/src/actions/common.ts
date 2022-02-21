@@ -1,3 +1,4 @@
+import * as ToggleActions  from './toggleAction';
 import * as itemActions from './itemActions';
 import * as listActions from './listActions';
 
@@ -11,7 +12,8 @@ export enum ActionTypes {
     LOAD_TODO_ITEM = "LOAD_TODO_ITEM",
     SELECT_TODO_ITEM = "SELECT_TODO_ITEM",
     SAVE_TODO_ITEM = "SAVE_TODO_ITEM",
-    DELETE_TODO_ITEM = "DELETE_TODO_ITEM"
+    DELETE_TODO_ITEM = "DELETE_TODO_ITEM",
+    CHANGE_STATES = "CHANGE_STATES"
 }
 
 export type TodoActions =
@@ -24,4 +26,5 @@ export type TodoActions =
     listActions.SelectListAction |
     listActions.LoadListAction |
     listActions.SaveListAction |
-    listActions.DeleteListAction;
+    listActions.DeleteListAction |
+    ToggleActions.ToggleAction;

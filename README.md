@@ -4,7 +4,7 @@ This repo contains a complete sample To Do application that demonstrates how to 
 
 ## ⛔ IMPORTANT
 
-> ### Please keep all repositories and templates you create on GitHub.com *private*
+> ### Please keep all repositories and templates you create on GitHub.com _private_
 
 ## To Do Application
 
@@ -39,36 +39,55 @@ Please install the following prerequisites on your local machine.
 1. Install [Azure CLI (v 2.30.0+)](https://docs.microsoft.com/cli/azure/install-azure-cli)
 1. Install Azure Dev CLI Extension
 
-    This allows you to run all of the `az dev` commands that you will see below.
+   This allows you to run all of the `az dev` commands that you will see below.
 
-    Run this command to install it:
+   Run this command to install it:
 
-    ```bash
-    az extension add --source https://azdevcliextstorage.blob.core.windows.net/whls/azure_dev-0.0.2-py3-none-any.whl -y
-    ```
+   ```bash
+   az extension add --source https://azdevcliextstorage.blob.core.windows.net/whls/azure_dev-0.0.2-py3-none-any.whl -y
+   ```
 
 ### Project Folder
 
-You will need an empty folder on your computer to house the project files.  
+You will need an empty folder on your computer to house the project files.
 
 1. Open your favorite terminal, create a new folder, and set your current directory to that newly created folder.
 
-    ```bash
-    mkdir {your-unique-project-folder-name}
-    cd {your-unique-project-folder-name}
-    ```
+   ```bash
+   mkdir {your-unique-project-folder-name}
+   cd {your-unique-project-folder-name}
+   ```
 
-### Code
+## Quickstart
+
+The fastest possible way for you to get this app up and running on Azure is to use the `az dev up` command.
+
+The `az dev up` command will:
+
+1. Provision all the Azure resources required by this application
+2. Deploy the code you need to run the application
+
+Run the following command to provision, build, and deploy this application to Azure in a single step.
+
+```bash
+az dev up --template todo-csharp-sql
+```
+
+> NOTE: This may take a while to complete as it performs both the `az dev provision` (creates Azure services) and `az dev deploy` (deploys code) steps.
+
+This will print a URL to the To Do API application and a URL to the To Do web application. Click the web application URL to launch the To Do app.
+
+Click the Azure Portal link to view resources provisioned.
+
+## Commands
+
+### Init
 
 Run the following command to get a local copy of this repository:
 
 ```bash
 az dev init --template todo-csharp-sql
 ```
-
-Now that you have your environment setup, you are ready to continue.
-
-## Quickstart
 
 ### Provision
 
@@ -87,10 +106,6 @@ Run the following command to deploy the application to Azure:
 ```bash
 az dev deploy
 ```
-
-This will print a URL that you can click to launch the application.
-
-!["Application Architecture"](assets/azdevupurls.png)
 
 ### Monitor
 
@@ -122,21 +137,21 @@ az dev monitor --logs
 
 ### Clean up
 
+#### Deprovision Azure Resources
+
 Run the following command to delete the application from your Azure subscription.
 
 ```bash
-az dev deprovision
+az dev down
 ```
+
+#### Remove the Azure Dev CLI extension
 
 Run the following command to remove the Azure Dev CLI extension:
 
 ```bash
 az extension remove --name azure-dev
 ```
-
-### Up
-
-Coming soon...
 
 ### Pipelines
 

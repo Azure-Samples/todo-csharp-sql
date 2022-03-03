@@ -37,6 +37,8 @@ const Layout: FC = (): ReactElement => {
 
     const onItemEdited = (item: TodoItem) => {
         actions.items.save(item.listId, item);
+        actions.items.select(undefined);
+        navigate(`/lists/${item.listId}`);
     }
 
     const onItemEditCancel = () => {

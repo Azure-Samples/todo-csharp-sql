@@ -104,7 +104,6 @@ resource farm 'Microsoft.Web/serverFarms@2020-06-01' = {
   }
 }
 
-
 module insights './appinsights.bicep' = {
   name: '${basename}-airesources'
   params: {

@@ -13,7 +13,7 @@ export enum ActionTypes {
     SELECT_TODO_ITEM = "SELECT_TODO_ITEM",
     SAVE_TODO_ITEM = "SAVE_TODO_ITEM",
     DELETE_TODO_ITEM = "DELETE_TODO_ITEM",
-    CHANGE_STATES = "CHANGE_STATES"
+    CHANGE_GROUP_STATES = "CHANGE_GROUP_STATES" // expand group or collapse group
 }
 
 export type TodoActions =

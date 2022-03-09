@@ -1,7 +1,8 @@
 import { CommandBar, DetailsList, DetailsListLayoutMode, ICommandBarItemProps, IStackStyles, Selection, Stack, IIconProps, SearchBox, Text, IGroup, IColumn, MarqueeSelection, FontIcon, IObjectWithKey, CheckboxVisibility, IDetailsGroupRenderProps, getTheme } from '@fluentui/react';
 import React, { ReactElement, useEffect, useState, FormEvent, FC } from 'react';
 import { useNavigate } from 'react-router';
-import { GroupStates, TodoItem, TodoItemState, TodoList } from '../models';
+import { Group, GroupStates, TodoItem, TodoItemState, TodoList } from '../models';
+import { getDefaultState } from '../models/applicationState';
 import { stackItemPadding } from '../ux/styles';
 
 interface TodoItemListPaneProps {
@@ -13,8 +14,7 @@ interface TodoItemListPaneProps {
     onDelete: (item: TodoItem) => void
     onComplete: (item: TodoItem) => void
     onSelect: (item?: TodoItem) => void
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    onGroupChange:(group?:any)=>void
+    onGroupChange:(group?:Group)=>void
 }
 
 interface TodoDisplayItem extends IObjectWithKey {
@@ -60,13 +60,13 @@ const TodoItemListPane: FC<TodoItemListPaneProps> = (props: TodoItemListPaneProp
     const [newItemName, setNewItemName] = useState('');
     const [items, setItems] = useState(createListItems(props.items || []));
     const [selectedItems, setSelectedItems] = useState<TodoItem[]>([]);
-    const [groupStates,setGroupStates] = useState(props.groupStates)
+    const [groupStates,setGroupStates] = useState(getDefaultState().groupStates)
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
     const selection = new Selection({
         onSelectionChanged: async () => {
-            const currentRes = localStorage.getItem("groupStates")
-            const currentStates = currentRes?JSON.parse(currentRes):undefined
+            const currentRes = localStorage.getItem("groupStates");
+            const currentStates = currentRes ? JSON.parse(currentRes) : groupStates;
             setGroupStates(currentStates)
             const selectedItems = selection.getSelection().map(item => (item as TodoDisplayItem).data);
             setSelectedItems(selectedItems);
@@ -91,10 +91,6 @@ const TodoItemListPane: FC<TodoItemListPaneProps> = (props: TodoItemListPaneProp
             selection.setKeySelected(props.selectedItem.id, true, true);
         }
     }, [items.length, props.selectedItem, selection])
-
-    useEffect(() => {
-        setGroupStates(props.groupStates)
-    }, [props.groupStates])
 
     const groups: IGroup[] = [
         {
@@ -176,10 +172,9 @@ const TodoItemListPane: FC<TodoItemListPaneProps> = (props: TodoItemListPaneProp
                 }
             },
             onToggleCollapse: (group: IGroup) => {
-                console.log(group)
                 changeGroupState(group)
                 const currentRes = localStorage.getItem("groupStates")
-                const currentStates = currentRes?JSON.parse(currentRes):null
+                const currentStates = currentRes ? JSON.parse(currentRes) : null
                 setGroupStates(currentStates)
             }
         },

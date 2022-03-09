@@ -1,28 +1,27 @@
 import { Dispatch } from "react";
 import { ActionTypes } from "./common";
 import { createPayloadAction, PayloadAction } from "./actionCreators";
-import { GroupStates } from "../models";
+import { Group,GroupStates,TodoItemState } from "../models";
 import { ApplicationState, getDefaultState } from "../models/applicationState";
 
 export interface ToggleActions {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    change(group:any):GroupStates
+    expandOrCollapseGroup(group:Group):GroupStates
 }
 // eslint-disable-next-line
-export const change = (group:any) => (dispatch: Dispatch<ToggleAction>) => {
-    const currentRes = localStorage.getItem("groupStates")
-    const cres = currentRes?JSON.parse(currentRes):null;
+export const expandOrCollapseGroup = (group:Group) => (dispatch: Dispatch<ToggleAction>) => {
+    const currentRes = localStorage.getItem("groupStates");
+    const cres = currentRes ? JSON.parse(currentRes) : null;
     const defaultState: ApplicationState = getDefaultState();
     const key = group.key;
-    const currentState = cres||defaultState.groupStates;
+    const currentState = cres || defaultState.groupStates;
     switch (key) {
-        case 'todo':
+        case TodoItemState.Todo:
             currentState.todo = !group.isCollapsed;
             break;
-        case 'inprogress':
+        case TodoItemState.InProgress:
             currentState.inprogress = !group.isCollapsed;
             break;
-        case 'done':
+        case TodoItemState.Done:
             currentState.done = !group.isCollapsed;
             break;
         default:
@@ -35,7 +34,7 @@ export const change = (group:any) => (dispatch: Dispatch<ToggleAction>) => {
 }
 
 export interface ToggleAction extends PayloadAction<string, GroupStates> {
-    type: ActionTypes.CHANGE_STATES
+    type: ActionTypes.CHANGE_GROUP_STATES
 }
 
-const toggleAction = createPayloadAction<ToggleAction>(ActionTypes.CHANGE_STATES);
+const toggleAction = createPayloadAction<ToggleAction>(ActionTypes.CHANGE_GROUP_STATES);

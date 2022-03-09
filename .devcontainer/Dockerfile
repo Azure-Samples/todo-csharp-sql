@@ -2,5 +2,5 @@
 
 FROM mcr.microsoft.com/vscode/devcontainers/universal:1-focal
 USER root
-RUN az extension add --source https://azdevcliextstorage.blob.core.windows.net/whls/azure_dev-0.0.2-py3-none-any.whl -y --system
+RUN az extension add --source https://azuresdkreleasepreview.blob.core.windows.net/azd/preview/0.0.1-beta/azure_dev-0.0.1b0-py3-none-any.whl -y --system
 USER codespace

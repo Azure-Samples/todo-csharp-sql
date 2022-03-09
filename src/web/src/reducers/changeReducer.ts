@@ -4,7 +4,7 @@ import { GroupStates } from "../models"
 
 export const changeReducer: Reducer<GroupStates, TodoActions> = (state: GroupStates, action: TodoActions): GroupStates => {
     switch (action.type) {
-        case ActionTypes.CHANGE_STATES:
+        case ActionTypes.CHANGE_GROUP_STATES:
             state = action.payload;
             break;
     }

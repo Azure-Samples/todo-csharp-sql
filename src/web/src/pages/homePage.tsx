@@ -1,7 +1,7 @@
 import React, { useEffect, useContext, useMemo } from 'react';
 import { IconButton, IContextualMenuProps, IIconProps, Stack, Text } from '@fluentui/react';
 import TodoItemListPane from '../components/todoItemListPane';
-import { TodoItem, TodoItemState } from '../models';
+import { Group, TodoItem, TodoItemState } from '../models';
 import * as itemActions from '../actions/itemActions';
 import * as listActions from '../actions/listActions';
 import * as toggleAction from '../actions/toggleAction';
@@ -24,8 +24,6 @@ const HomePage = () => {
         items: bindActionCreators(itemActions, appContext.dispatch) as unknown as ItemActions,
         group: bindActionCreators(toggleAction, appContext.dispatch) as unknown as ToggleActions,
     }), [appContext.dispatch]);
-
-    const groupStates = {states:appContext.state.groupStates}
 
     // Create default list of does not exist
     useEffect(() => {
@@ -92,9 +90,8 @@ const HomePage = () => {
         }
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const onGroupStateChange = (group?: any) => {
-        groupStates.states = actions.group.change(group);
+    const onGroupStateChange = (group?: Group) => {
+        actions.group.expandOrCollapseGroup(group);
     }
 
     const iconProps: IIconProps = {
@@ -137,7 +134,6 @@ const HomePage = () => {
             </Stack.Item>
             <Stack.Item tokens={stackItemPadding}>
                 <TodoItemListPane
-                    groupStates={groupStates.states}
                     list={appContext.state.selectedList}
                     items={appContext.state.selectedList?.items}
                     selectedItem={appContext.state.selectedItem}

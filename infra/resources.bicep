@@ -104,7 +104,6 @@ resource farm 'Microsoft.Web/serverFarms@2020-06-01' = {
   }
 }
 
-
 module insights './appinsights.bicep' = {
   name: '${basename}-airesources'
   params: {
@@ -115,7 +114,7 @@ module insights './appinsights.bicep' = {
 
 resource sqlServer 'Microsoft.Sql/servers@2021-05-01-preview' = {
   name: '${basename}sql'
-  location: resourceGroup().location
+  location: location
   properties: {
     version: '12.0'
     minimalTlsVersion: '1.2'
@@ -132,7 +131,7 @@ resource sqlServer 'Microsoft.Sql/servers@2021-05-01-preview' = {
 
   resource database 'databases' = {
     name: 'ToDo'
-    location: resourceGroup().location
+    location: location
   }
 
   resource firewall 'firewallRules' = {

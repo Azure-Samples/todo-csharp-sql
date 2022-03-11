@@ -15,11 +15,3 @@ export interface TodoItem {
     createdDate?: Date
     updatedDate?: Date
 }
-
-export interface Group {
-    key: TodoItemState ,
-    name: string, 
-    count: number, 
-    startIndex: number, 
-    isCollapsed: boolean
-}

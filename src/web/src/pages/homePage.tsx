@@ -1,7 +1,7 @@
 import React, { useEffect, useContext, useMemo } from 'react';
-import { IconButton, IContextualMenuProps, IIconProps, Stack, Text } from '@fluentui/react';
+import { IconButton, IContextualMenuProps,IGroup, IIconProps, Stack, Text } from '@fluentui/react';
 import TodoItemListPane from '../components/todoItemListPane';
-import { Group, TodoItem, TodoItemState } from '../models';
+import { TodoItem, TodoItemState } from '../models';
 import * as itemActions from '../actions/itemActions';
 import * as listActions from '../actions/listActions';
 import * as toggleAction from '../actions/toggleAction';
@@ -90,8 +90,8 @@ const HomePage = () => {
         }
     }
 
-    const onGroupStateChange = (group?: Group) => {
-        actions.group.expandOrCollapseGroup(group);
+    const onGroupStateChange = (group: IGroup) => {
+        return actions.group.expandOrCollapseGroup(group);
     }
 
     const iconProps: IIconProps = {

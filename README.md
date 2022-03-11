@@ -44,7 +44,9 @@ Please install the following prerequisites on your local machine.
    Run this command to install it:
 
    ```bash
-   az extension add --source https://azuresdkreleasepreview.blob.core.windows.net/azd/preview/0.0.1-beta/azure_dev-0.0.1b0-py3-none-any.whl -y
+   az config set extension.index_url=https://azuresdkreleasepreview.blob.core.windows.net/azd/whl/latest/index.json
+   az extension add --name azure-dev
+   az config unset extension.index_url
    ```
 
 ### Project Folder

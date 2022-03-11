@@ -1,19 +1,17 @@
 import { Dispatch } from "react";
 import { ActionTypes } from "./common";
 import { createPayloadAction, PayloadAction } from "./actionCreators";
-import { Group,GroupStates,TodoItemState } from "../models";
-import { ApplicationState, getDefaultState } from "../models/applicationState";
+import { GroupStates,TodoItemState } from "../models";
+import { getCurrentLocalStoage, setCurrentLocalStorage } from "./operateLocalStorageAction";
+import { IGroup } from "@fluentui/react";
 
 export interface ToggleActions {
-    expandOrCollapseGroup(group:Group):GroupStates
+    expandOrCollapseGroup(group: IGroup): GroupStates
 }
 // eslint-disable-next-line
-export const expandOrCollapseGroup = (group:Group) => (dispatch: Dispatch<ToggleAction>) => {
-    const currentRes = localStorage.getItem("groupStates");
-    const cres = currentRes ? JSON.parse(currentRes) : null;
-    const defaultState: ApplicationState = getDefaultState();
+export const expandOrCollapseGroup = (group: IGroup) => (dispatch: Dispatch<ToggleAction>) => {
     const key = group.key;
-    const currentState = cres || defaultState.groupStates;
+    const currentState = getCurrentLocalStoage();
     switch (key) {
         case TodoItemState.Todo:
             currentState.todo = !group.isCollapsed;
@@ -27,7 +25,9 @@ export const expandOrCollapseGroup = (group:Group) => (dispatch: Dispatch<Toggle
         default:
             break;
       }
-    localStorage.setItem('groupStates',JSON.stringify(currentState))
+
+    setCurrentLocalStorage(currentState);
+
     dispatch(toggleAction(currentState));
 
     return currentState;

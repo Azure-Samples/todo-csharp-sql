@@ -13,7 +13,7 @@ on:
       - master
 env:
   AZURE_CREDENTIALS: ${{ secrets.AZURE_CREDENTIALS }}
-  BASENAME: ${{ secrets.BASENAME }}
+  ENVNAME: ${{ secrets.ENVNAME }}
 
 jobs:
   build:

@@ -1,7 +1,7 @@
 openapi: 3.0.0
 info:
   description: Simple Todo API
-  version: 2.0.0
+  version: 3.0.0
   title: Simple Todo API
   contact:
     email: wabrez@microsoft.com
@@ -132,6 +132,7 @@ components:
 paths:
   /lists:
     get:
+      operationId: GetLists
       summary: Gets an array of Todo lists
       tags:
         - Lists
@@ -140,8 +141,9 @@ paths:
         - $ref: "#/components/parameters/skip"
       responses:
         200:
-          $ref: "#/components/responses/TodoList"
+          $ref: "#/components/responses/TodoListArray"
     post:
+      operationId: CreateList
       summary: Creates a new Todo list
       tags:
         - Lists
@@ -154,6 +156,7 @@ paths:
           description: Invalid request schema
   /lists/{listId}:
     get:
+      operationId: GetListById
       summary: Gets a Todo list by unique identifier
       tags:
         - Lists
@@ -165,6 +168,7 @@ paths:
         404:
           description: Todo list not found
     put:
+      operationId: UpdateListById
       summary: Updates a Todo list by unique identifier
       tags:
         - Lists
@@ -178,6 +182,7 @@ paths:
         400:
           description: Todo list is invalid
     delete:
+      operationId: DeleteListById
       summary: Deletes a Todo list by unique identifier
       tags:
         - Lists
@@ -190,6 +195,7 @@ paths:
           description: Todo list not found
   /lists/{listId}/items:
     post:
+      operationId: CreateItem
       summary: Creates a new Todo item within a list
       tags:
         - Items
@@ -203,6 +209,7 @@ paths:
         404:
           description: Todo list not found
     get:
+      operationId: GetItemsByListId
       summary: Gets Todo items within the specified list
       tags:
         - Items
@@ -212,11 +219,12 @@ paths:
         - $ref: "#/components/parameters/skip"
       responses:
         200:
-          $ref: "#/components/responses/TodoListArray"
+          $ref: "#/components/responses/TodoItemArray"
         404:
           description: Todo list not found
   /lists/{listId}/items/{itemId}:
     get:
+      operationId: GetItemById
       summary: Gets a Todo item by unique identifier
       tags:
         - Items
@@ -229,6 +237,7 @@ paths:
         404:
           description: Todo list or item not found
     put:
+      operationId: UpdateItemById
       summary: Updates a Todo item by unique identifier
       tags:
         - Items
@@ -245,6 +254,7 @@ paths:
         404:
           description: Todo list or item not found
     delete:
+      operationId: DeleteItemById
       summary: Deletes a Todo item by unique identifier
       tags:
         - Items
@@ -253,11 +263,12 @@ paths:
         - $ref: "#/components/parameters/itemId"
       responses:
         204:
-          $ref: "#/components/responses/TodoItem"
+          description: Todo item deleted successfully
         404:
           description: Todo list or item not found
   /lists/{listId}/items/state/{state}:
     get:
+      operationId: GetItemsByListIdAndState
       summary: Gets a list of Todo items of a specific state
       tags:
         - Items
@@ -272,6 +283,7 @@ paths:
         404:
           description: Todo list or item not found
     put:
+      operationId: UpdateItemsStateByListId
       summary: Changes the state of the specified list items
       tags:
         - Items

@@ -57,14 +57,21 @@ const TodoItemListPane: FC<TodoItemListPaneProps> = (props: TodoItemListPaneProp
     const [newItemName, setNewItemName] = useState('');
     const [items, setItems] = useState(createListItems(props.items || []));
     const [selectedItems, setSelectedItems] = useState<TodoItem[]>([]);
+    const [isDoneCategoryCollapsed, setIsDoneCategoryCollapsed] = useState(true);
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
     const selection = new Selection({
-        onSelectionChanged: async () => {
+        onSelectionChanged: () => {
             const selectedItems = selection.getSelection().map(item => (item as TodoDisplayItem).data);
             setSelectedItems(selectedItems);
         }
     });
+
+    // Handle list changed
+    useEffect(() => {
+        setIsDoneCategoryCollapsed(true);
+        setSelectedItems([]);
+    }, [props.list]);
 
     // Handle items changed
     useEffect(() => {
@@ -83,7 +90,13 @@ const TodoItemListPane: FC<TodoItemListPaneProps> = (props: TodoItemListPaneProp
         if (items.length > 0 && props.selectedItem?.id) {
             selection.setKeySelected(props.selectedItem.id, true, true);
         }
-    }, [items.length, props.selectedItem, selection])
+
+        const doneItems = selectedItems.filter(i => i.state === TodoItemState.Done);
+        if (doneItems.length > 0) {
+            setIsDoneCategoryCollapsed(false);
+        }
+
+    }, [items.length, props.selectedItem, selectedItems, selection])
 
     const groups: IGroup[] = [
         {
@@ -103,11 +116,11 @@ const TodoItemListPane: FC<TodoItemListPaneProps> = (props: TodoItemListPaneProp
             name: 'Done',
             count: items.filter(i => i.state === TodoItemState.Done).length,
             startIndex: items.findIndex(i => i.state === TodoItemState.Done),
-            isCollapsed: true
+            isCollapsed: isDoneCategoryCollapsed
         },
     ]
 
-    const onFormSubmit = async (evt: FormEvent<HTMLFormElement>) => {
+    const onFormSubmit = (evt: FormEvent<HTMLFormElement>) => {
         evt.preventDefault();
 
         if (newItemName && props.onCreated) {
@@ -129,14 +142,12 @@ const TodoItemListPane: FC<TodoItemListPaneProps> = (props: TodoItemListPaneProp
         navigate(`/lists/${item.data.listId}/items/${item.data.id}`);
     }
 
-    const completeItems = async () => {
-        const tasks = selectedItems.map(item => props.onComplete(item));
-        Promise.all(tasks);
+    const completeItems = () => {
+        selectedItems.map(item => props.onComplete(item));
     }
 
-    const deleteItems = async () => {
-        const tasks = selectedItems.map(item => props.onDelete(item));
-        Promise.all(tasks);
+    const deleteItems = () => {
+        selectedItems.map(item => props.onDelete(item));
     }
 
     const columns: IColumn[] = [

@@ -1,10 +1,10 @@
 name: todo-csharp-mongo
 services:
-  - name: ${AZURE_ENVNAME}api
+  - name: ${AZURE_ENV_NAME}api
     project: src/api
     language: csharp
     host: appservice
-  - name: ${AZURE_ENVNAME}web
+  - name: ${AZURE_ENV_NAME}web
     project: src/web
     dist: build
     language: js

@@ -1,8 +1,8 @@
-param envname string
+param name string
 param location string
 
 resource web 'Microsoft.Web/sites@2021-01-15' = {
-  name: '${envname}web'
+  name: '${name}web'
   location: location
   properties: {
     serverFarmId: farm.id
@@ -47,7 +47,7 @@ resource web 'Microsoft.Web/sites@2021-01-15' = {
 }
 
 resource api 'Microsoft.Web/sites@2021-01-15' = {
-  name: '${envname}api'
+  name: '${name}api'
   location: location
   kind: 'app,linux'
   properties: {
@@ -97,7 +97,7 @@ resource api 'Microsoft.Web/sites@2021-01-15' = {
 }
 
 resource farm 'Microsoft.Web/serverFarms@2020-06-01' = {
-  name: '${envname}farm'
+  name: '${name}farm'
   location: location
   sku: {
     name: 'B1'
@@ -105,15 +105,15 @@ resource farm 'Microsoft.Web/serverFarms@2020-06-01' = {
 }
 
 module insights './appinsights.bicep' = {
-  name: '${envname}-airesources'
+  name: '${name}-airesources'
   params: {
-    envname: toLower(envname)
+    name: toLower(name)
     location: location
   }
 }
 
 resource sqlServer 'Microsoft.Sql/servers@2021-05-01-preview' = {
-  name: '${envname}sql'
+  name: '${name}sql'
   location: location
   properties: {
     version: '12.0'

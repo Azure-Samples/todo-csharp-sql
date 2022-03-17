@@ -6,7 +6,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddScoped<ListsRepository>();
 builder.Services.AddDbContext<TodoDb>(options =>
 {
-    options.UseSqlServer(builder.Configuration["SQL_CONNECTION_STRING"], sqlOptions => sqlOptions.EnableRetryOnFailure());
+    options.UseSqlServer(builder.Configuration["AZURE_SQL_CONNECTION_STRING"], sqlOptions => sqlOptions.EnableRetryOnFailure());
 });
 
 builder.Services.AddControllers();
@@ -20,7 +20,8 @@ await using (var scope = app.Services.CreateAsyncScope())
     await db.Database.EnsureCreatedAsync();
 }
 
-app.UseCors(policy => {
+app.UseCors(policy =>
+{
     policy.AllowAnyOrigin();
     policy.AllowAnyHeader();
     policy.AllowAnyMethod();

@@ -23,11 +23,9 @@ module resources './resources.bicep' = {
   }
 }
 
-output SQL_CONNECTION_STRING string = resources.outputs.SQL_CONNECTION_STRING
+output AZURE_SQL_CONNECTION_STRING string = resources.outputs.AZURE_SQL_CONNECTION_STRING
 output APPINSIGHTS_INSTRUMENTATIONKEY string = resources.outputs.APPINSIGHTS_INSTRUMENTATIONKEY
 output APPINSIGHTS_CONNECTION_STRING string = resources.outputs.APPINSIGHTS_CONNECTION_STRING
-output APPINSIGHTS_NAME string = resources.outputs.APPINSIGHTS_NAME
-output APPINSIGHTS_DASHBOARD_NAME string = resources.outputs.APPINSIGHTS_DASHBOARD_NAME
 output REACT_APP_API_BASE_URL string = resources.outputs.API_URI
 output REACT_APP_APPINSIGHTS_INSTRUMENTATIONKEY string = resources.outputs.APPINSIGHTS_INSTRUMENTATIONKEY
-output LOCATION string = location
+output AZURE_LOCATION string = location

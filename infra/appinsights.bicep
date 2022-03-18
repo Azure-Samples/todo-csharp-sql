@@ -1,8 +1,8 @@
-param envname string
+param name string
 param location string
 
 resource appInsights 'Microsoft.Insights/components@2020-02-02' = {
-  name: '${envname}ai'
+  name: '${name}ai'
   location: location
   kind: 'web'
   properties: {
@@ -11,7 +11,7 @@ resource appInsights 'Microsoft.Insights/components@2020-02-02' = {
 }
 
 resource appInsightsDashboard 'Microsoft.Portal/dashboards@2020-09-01-preview' = {
-  name: '${envname}aidash'
+  name: '${name}aidash'
   location: location
   properties: {
     lenses: [
@@ -1235,7 +1235,5 @@ resource appInsightsDashboard 'Microsoft.Portal/dashboards@2020-09-01-preview' =
   }
 }
 
-output APPINSIGHTS_NAME string = appInsights.name
 output APPINSIGHTS_INSTRUMENTATIONKEY string = appInsights.properties.InstrumentationKey
 output APPINSIGHTS_CONNECTION_STRING string = appInsights.properties.ConnectionString
-output APPINSIGHTS_DASHBOARD_NAME string = appInsightsDashboard.name

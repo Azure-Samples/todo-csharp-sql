@@ -141,7 +141,7 @@ az dev monitor --logs
 
 #### Deprovision Azure Resources
 
-Run the following command to delete the application from your Azure subscription.
+Run the following command to delete the application from your Azure Subscription.
 
 ```bash
 az dev down

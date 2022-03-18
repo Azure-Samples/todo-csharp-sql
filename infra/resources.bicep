@@ -1,8 +1,8 @@
-param envname string
+param name string
 param location string
 
 resource web 'Microsoft.Web/sites@2021-01-15' = {
-  name: '${envname}web'
+  name: '${name}web'
   location: location
   properties: {
     serverFarmId: farm.id
@@ -47,7 +47,7 @@ resource web 'Microsoft.Web/sites@2021-01-15' = {
 }
 
 resource api 'Microsoft.Web/sites@2021-01-15' = {
-  name: '${envname}api'
+  name: '${name}api'
   location: location
   kind: 'app,linux'
   properties: {
@@ -66,7 +66,7 @@ resource api 'Microsoft.Web/sites@2021-01-15' = {
   resource appsettings 'config' = {
     name: 'appsettings'
     properties: {
-      'SQL_CONNECTION_STRING': SQL_CONNECTION_STRING
+      'AZURE_SQL_CONNECTION_STRING': AZURE_SQL_CONNECTION_STRING
       'APPINSIGHTS_INSTRUMENTATIONKEY': insights.outputs.APPINSIGHTS_INSTRUMENTATIONKEY
     }
   }
@@ -97,7 +97,7 @@ resource api 'Microsoft.Web/sites@2021-01-15' = {
 }
 
 resource farm 'Microsoft.Web/serverFarms@2020-06-01' = {
-  name: '${envname}farm'
+  name: '${name}farm'
   location: location
   sku: {
     name: 'B1'
@@ -105,15 +105,15 @@ resource farm 'Microsoft.Web/serverFarms@2020-06-01' = {
 }
 
 module insights './appinsights.bicep' = {
-  name: '${envname}-airesources'
+  name: '${name}-airesources'
   params: {
-    envname: toLower(envname)
+    name: toLower(name)
     location: location
   }
 }
 
 resource sqlServer 'Microsoft.Sql/servers@2021-05-01-preview' = {
-  name: '${envname}sql'
+  name: '${name}sql'
   location: location
   properties: {
     version: '12.0'
@@ -143,11 +143,11 @@ resource sqlServer 'Microsoft.Sql/servers@2021-05-01-preview' = {
   }
 }
 
-var SQL_CONNECTION_STRING = 'Server=${sqlServer.properties.fullyQualifiedDomainName}; Authentication=Active Directory Default; Database=${sqlServer::database.name};'
+// Defined as a var here because it is used above
 
-output SQL_CONNECTION_STRING string = SQL_CONNECTION_STRING
-output APPINSIGHTS_NAME string = insights.outputs.APPINSIGHTS_NAME
+var AZURE_SQL_CONNECTION_STRING = 'Server=${sqlServer.properties.fullyQualifiedDomainName}; Authentication=Active Directory Default; Database=${sqlServer::database.name};'
+
+output AZURE_SQL_CONNECTION_STRING string = AZURE_SQL_CONNECTION_STRING
 output APPINSIGHTS_INSTRUMENTATIONKEY string = insights.outputs.APPINSIGHTS_INSTRUMENTATIONKEY
-output APPINSIGHTS_DASHBOARD_NAME string = insights.outputs.APPINSIGHTS_DASHBOARD_NAME
 output APPINSIGHTS_CONNECTION_STRING string = insights.outputs.APPINSIGHTS_CONNECTION_STRING
 output API_URI string = 'https://${api.properties.defaultHostName}'

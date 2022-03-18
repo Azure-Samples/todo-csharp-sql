@@ -21,12 +21,12 @@ jobs:
       image: azdevcliextacr.azurecr.io/azure-dev:latest
     steps:
       - name: Checkout
-          uses: actions/checkout@v2
+        uses: actions/checkout@v2
 
       - name: Log in with Azure
-          uses: azure/login@v1
-          with:
-            creds: ${{ secrets.AZURE_CREDENTIALS }}
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
 
       - name: Azure Dev Deploy
-          run: az dev deploy
+        run: az dev deploy

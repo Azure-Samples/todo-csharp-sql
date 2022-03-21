@@ -47,13 +47,13 @@
     "@types/react": "^17.0.41",
     "@types/react-dom": "^17.0.14",
     "@types/react-router-dom": "^5.3.3",
-    "@typescript-eslint/eslint-plugin": "^5.4.0",
-    "@typescript-eslint/parser": "^5.4.0",
+    "@typescript-eslint/eslint-plugin": "^5.16.0",
+    "@typescript-eslint/parser": "^5.16.0",
     "eslint-config-react-app": "^7.0.0",
     "if-node-version": "^1.1.1",
     "immer": "^9.0.7",
     "react-scripts": "^5.0.0",
     "typescript": "^4.6.2",
-    "eslint": "^8.0.0"
+    "eslint": "^8.11.0"
   }
 }

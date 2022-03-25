@@ -1,4 +1,6 @@
-name: todo-csharp-mongo
+name: todo-csharp-sql
+metadata:
+  template: todo-csharp-sql@0.0.1-beta
 services:
   - name: ${AZURE_ENV_NAME}web
     project: src/web

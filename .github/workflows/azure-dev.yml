@@ -27,4 +27,4 @@ jobs:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
       - name: Azure Dev Up
-        run: az dev up -e ${{ secrets.AZURE_ENV_NAME }} --no-prompt
+        run: az dev up --no-prompt

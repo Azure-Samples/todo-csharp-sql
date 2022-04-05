@@ -28,3 +28,7 @@ jobs:
 
       - name: Azure Dev Up
         run: az dev up --no-prompt
+        env:
+          AZURE_ENV_NAME: ${{ secrets.AZURE_ENV_NAME }}
+          AZURE_LOCATION: ${{ secrets.AZURE_LOCATION }}
+          AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}

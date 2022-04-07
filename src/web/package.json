@@ -13,8 +13,12 @@
     "web-vitals": "^1.1.2"
   },
   "scripts": {
+    "envconfig": "cross-env ./entrypoint.sh -e .env -o ./public/env-config.js",
+    "prestart": "npm run envconfig",
     "start": "if-node-version '>= 17' && react-scripts --openssl-legacy-provider start || react-scripts start",
+    "prebuild": "npm run envconfig",
     "build": "if-node-version '>= 17' && react-scripts --openssl-legacy-provider build || react-scripts build",
+    "pretest": "npm run envconfig",
     "test": "if-node-version '>= 17' && react-scripts --openssl-legacy-provider test || react-scripts test",
     "eject": "if-node-version '>= 17' && react-scripts --openssl-legacy-provider eject || react-scripts eject",
     "lint": "eslint ./src --ext .ts,.tsx"
@@ -49,6 +53,7 @@
     "@types/react-router-dom": "^5.3.3",
     "@typescript-eslint/eslint-plugin": "^5.16.0",
     "@typescript-eslint/parser": "^5.16.0",
+    "cross-env": "^7.0.3",
     "eslint-config-react-app": "^7.0.0",
     "if-node-version": "^1.1.1",
     "immer": "^9.0.7",

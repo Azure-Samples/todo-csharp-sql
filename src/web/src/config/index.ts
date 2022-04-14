@@ -13,10 +13,10 @@ export interface AppConfig {
 
 const config: AppConfig = {
     api: {
-        baseUrl: process.env.REACT_APP_API_BASE_URL || 'http://localhost:3100'
+        baseUrl: window.ENV_CONFIG.REACT_APP_API_BASE_URL || 'http://localhost:3100'
     },
     observability: {
-        instrumentationKey: process.env.REACT_APP_APPINSIGHTS_INSTRUMENTATIONKEY || ''
+        instrumentationKey: window.ENV_CONFIG.REACT_APP_APPINSIGHTS_INSTRUMENTATIONKEY || ''
     }
 }
 

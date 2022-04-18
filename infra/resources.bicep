@@ -17,7 +17,7 @@ resource web 'Microsoft.Web/sites@2021-01-15' = {
     name: 'appsettings'
     properties: {
       'SCM_DO_BUILD_DURING_DEPLOYMENT': 'false'
-      'APPINSIGHTS_INSTRUMENTATIONKEY': appInsights.outputs.APPINSIGHTS_INSTRUMENTATIONKEY
+      'APPINSIGHTS_INSTRUMENTATIONKEY': appInsightsResources.outputs.APPINSIGHTS_INSTRUMENTATIONKEY
     }
   }
 
@@ -67,7 +67,7 @@ resource api 'Microsoft.Web/sites@2021-01-15' = {
     name: 'appsettings'
     properties: {
       'AZURE_SQL_CONNECTION_STRING': AZURE_SQL_CONNECTION_STRING
-      'APPINSIGHTS_INSTRUMENTATIONKEY': appInsights.outputs.APPINSIGHTS_INSTRUMENTATIONKEY
+      'APPINSIGHTS_INSTRUMENTATIONKEY': appInsightsResources.outputs.APPINSIGHTS_INSTRUMENTATIONKEY
     }
   }
 
@@ -104,7 +104,7 @@ resource appServicePlan 'Microsoft.Web/serverFarms@2020-06-01' = {
   }
 }
 
-module appInsights './appinsights.bicep' = {
+module appInsightsResources './appinsights.bicep' = {
   name: '${name}insightsres'
   params: {
     name: toLower(name)
@@ -148,6 +148,6 @@ resource sqlServer 'Microsoft.Sql/servers@2021-05-01-preview' = {
 var AZURE_SQL_CONNECTION_STRING = 'Server=${sqlServer.properties.fullyQualifiedDomainName}; Authentication=Active Directory Default; Database=${sqlServer::database.name};'
 
 output AZURE_SQL_CONNECTION_STRING string = AZURE_SQL_CONNECTION_STRING
-output APPINSIGHTS_INSTRUMENTATIONKEY string = appInsights.outputs.APPINSIGHTS_INSTRUMENTATIONKEY
-output APPINSIGHTS_CONNECTION_STRING string = appInsights.outputs.APPINSIGHTS_CONNECTION_STRING
+output APPINSIGHTS_INSTRUMENTATIONKEY string = appInsightsResources.outputs.APPINSIGHTS_INSTRUMENTATIONKEY
+output APPINSIGHTS_CONNECTION_STRING string = appInsightsResources.outputs.APPINSIGHTS_CONNECTION_STRING
 output API_URI string = 'https://${api.properties.defaultHostName}'

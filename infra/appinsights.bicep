@@ -2,7 +2,7 @@ param name string
 param location string
 
 resource appInsights 'Microsoft.Insights/components@2020-02-02' = {
-  name: '${name}ai'
+  name: '${name}insights'
   location: location
   kind: 'web'
   properties: {
@@ -11,7 +11,7 @@ resource appInsights 'Microsoft.Insights/components@2020-02-02' = {
 }
 
 resource appInsightsDashboard 'Microsoft.Portal/dashboards@2020-09-01-preview' = {
-  name: '${name}aidash'
+  name: '${name}insightsdash'
   location: location
   properties: {
     lenses: [

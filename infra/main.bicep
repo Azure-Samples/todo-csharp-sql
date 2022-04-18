@@ -15,7 +15,7 @@ resource resourceGroup 'Microsoft.Resources/resourceGroups@2020-06-01' = {
 }
 
 module resources './resources.bicep' = {
-  name: '${resourceGroup.name}-resources'
+  name: '${resourceGroup.name}res'
   scope: resourceGroup
   params: {
     name: toLower(name)

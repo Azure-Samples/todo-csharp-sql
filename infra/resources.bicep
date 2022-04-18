@@ -97,7 +97,7 @@ resource api 'Microsoft.Web/sites@2021-01-15' = {
 }
 
 resource appServicePlan 'Microsoft.Web/serverFarms@2020-06-01' = {
-  name: '${name}appserviceplan'
+  name: '${name}plan'
   location: location
   sku: {
     name: 'B1'
@@ -105,7 +105,7 @@ resource appServicePlan 'Microsoft.Web/serverFarms@2020-06-01' = {
 }
 
 module appInsights './appinsights.bicep' = {
-  name: '${name}-appinsights-resources'
+  name: '${name}insightsres'
   params: {
     name: toLower(name)
     location: location

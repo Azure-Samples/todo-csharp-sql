@@ -5,7 +5,7 @@ resource web 'Microsoft.Web/sites@2021-01-15' = {
   name: '${name}web'
   location: location
   properties: {
-    serverFarmId: farm.id
+    serverFarmId: appServicePlan.id
     siteConfig: {
       alwaysOn: true
       ftpsState: 'FtpsOnly'
@@ -13,11 +13,11 @@ resource web 'Microsoft.Web/sites@2021-01-15' = {
     httpsOnly: true
   }
 
-  resource webappappsettings 'config' = {
+  resource appSettings 'config' = {
     name: 'appsettings'
     properties: {
       'SCM_DO_BUILD_DURING_DEPLOYMENT': 'false'
-      'APPINSIGHTS_INSTRUMENTATIONKEY': insights.outputs.APPINSIGHTS_INSTRUMENTATIONKEY
+      'APPINSIGHTS_INSTRUMENTATIONKEY': appInsightsResources.outputs.APPINSIGHTS_INSTRUMENTATIONKEY
     }
   }
 
@@ -51,7 +51,7 @@ resource api 'Microsoft.Web/sites@2021-01-15' = {
   location: location
   kind: 'app,linux'
   properties: {
-    serverFarmId: farm.id
+    serverFarmId: appServicePlan.id
     siteConfig: {
       alwaysOn: true
       ftpsState: 'FtpsOnly'
@@ -63,11 +63,11 @@ resource api 'Microsoft.Web/sites@2021-01-15' = {
     type: 'SystemAssigned'
   }
 
-  resource appsettings 'config' = {
+  resource appSettings 'config' = {
     name: 'appsettings'
     properties: {
       'AZURE_SQL_CONNECTION_STRING': AZURE_SQL_CONNECTION_STRING
-      'APPINSIGHTS_INSTRUMENTATIONKEY': insights.outputs.APPINSIGHTS_INSTRUMENTATIONKEY
+      'APPINSIGHTS_INSTRUMENTATIONKEY': appInsightsResources.outputs.APPINSIGHTS_INSTRUMENTATIONKEY
     }
   }
 
@@ -96,16 +96,16 @@ resource api 'Microsoft.Web/sites@2021-01-15' = {
   }
 }
 
-resource farm 'Microsoft.Web/serverFarms@2020-06-01' = {
-  name: '${name}farm'
+resource appServicePlan 'Microsoft.Web/serverFarms@2020-06-01' = {
+  name: '${name}plan'
   location: location
   sku: {
     name: 'B1'
   }
 }
 
-module insights './appinsights.bicep' = {
-  name: '${name}-airesources'
+module appInsightsResources './appinsights.bicep' = {
+  name: '${name}insightsres'
   params: {
     name: toLower(name)
     location: location
@@ -148,6 +148,6 @@ resource sqlServer 'Microsoft.Sql/servers@2021-05-01-preview' = {
 var AZURE_SQL_CONNECTION_STRING = 'Server=${sqlServer.properties.fullyQualifiedDomainName}; Authentication=Active Directory Default; Database=${sqlServer::database.name};'
 
 output AZURE_SQL_CONNECTION_STRING string = AZURE_SQL_CONNECTION_STRING
-output APPINSIGHTS_INSTRUMENTATIONKEY string = insights.outputs.APPINSIGHTS_INSTRUMENTATIONKEY
-output APPINSIGHTS_CONNECTION_STRING string = insights.outputs.APPINSIGHTS_CONNECTION_STRING
+output APPINSIGHTS_INSTRUMENTATIONKEY string = appInsightsResources.outputs.APPINSIGHTS_INSTRUMENTATIONKEY
+output APPINSIGHTS_CONNECTION_STRING string = appInsightsResources.outputs.APPINSIGHTS_CONNECTION_STRING
 output API_URI string = 'https://${api.properties.defaultHostName}'

@@ -9,14 +9,14 @@ param name string
 @description('Primary location for all resources')
 param location string
 
-resource rg 'Microsoft.Resources/resourceGroups@2020-06-01' = {
+resource resourceGroup 'Microsoft.Resources/resourceGroups@2020-06-01' = {
   name: '${name}rg'
   location: location
 }
 
 module resources './resources.bicep' = {
-  name: '${rg.name}-resources'
-  scope: rg
+  name: '${resourceGroup.name}res'
+  scope: resourceGroup
   params: {
     name: toLower(name)
     location: location

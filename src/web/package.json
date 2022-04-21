@@ -58,6 +58,7 @@
   },
   "overrides": {
     "async": "^3.2.3",
-    "nth-check": "^2.0.1"
+    "nth-check": "^2.0.1",
+    "minimist": "^1.2.6"
   }
 }

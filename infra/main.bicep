@@ -1,6 +1,3 @@
-if you're happy and you know it syntax error
-biscuits
-haberdashery
 targetScope = 'subscription'
 
 @minLength(1)

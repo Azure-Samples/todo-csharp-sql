@@ -5,10 +5,8 @@ WORKDIR /app
 
 COPY . .
 
-# Fix up entrypoint line endings and make exec
-RUN apk update && apk add --no-cache dos2unix \
-    && dos2unix /app/entrypoint.sh && chmod +x /app/entrypoint.sh \
-    && apk del dos2unix
+# Make entrypoint script executable
+RUN chmod +x /app/entrypoint.sh
 
 # install project dependencies
 RUN npm ci

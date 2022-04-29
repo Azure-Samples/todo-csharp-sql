@@ -5,7 +5,6 @@ WORKDIR /app
 
 COPY . .
 
- Make entrypoint script executable
 # Fix up entrypoint line endings and make exec
 RUN apk update && apk add --no-cache dos2unix \
     && dos2unix /app/entrypoint.sh && chmod +x /app/entrypoint.sh \

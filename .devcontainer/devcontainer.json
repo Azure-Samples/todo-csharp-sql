@@ -1,0 +1,36 @@
+{
+    "name": "Azure Developer CLI DevContainer",
+    "image": "azddevcontainersreg.azurecr.io/devcontainers:latest",
+    "features": {
+        "github-cli": "latest",
+        "azure-cli": "latest",
+        "python": "latest",
+        "dotnet": "latest"
+    },
+    // "settings": {
+    //     "terminal.integrated.defaultProfile.linux": "bash",
+    //     "terminal.integrated.automationProfile.linux": {
+    //         "path": "/bin/bash"
+    //     }
+    // },
+    "extensions": [
+        "/extensions/azure-dev.vsix",
+        "dbaeumer.vscode-eslint",
+        "ms-azuretools.vscode-bicep",
+        "eg2.vscode-npm-script",
+        "ms-azuretools.vscode-docker",
+        "ms-vscode.vscode-node-azure-pack",
+        "ms-vscode.js-debug",
+        "ms-azuretools.vscode-azurefunctions",
+        "ms-dotnettools.csharp",
+        "esbenp.prettier-vscode",
+        "ms-dotnettools.vscode-dotnet-runtime"
+    ],
+    // // Use 'forwardPorts' to make a list of ports inside the container available locally.
+    "forwardPorts": [
+        3000,
+        3100
+    ],
+    "postCreateCommand": "npm install -g https://aka.ms/azure-dev/npm && az extension add -n containerapp -y",
+    "remoteUser": "node"
+}

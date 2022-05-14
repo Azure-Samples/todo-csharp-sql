@@ -1,5 +1,5 @@
 {
-    "name": "Azure Developer CLI DevContainer",
+    "name": "Azure Dev CLI",
     "image": "azddevcontainersreg.azurecr.io/devcontainers:latest",
     "features": {
         "github-cli": "latest",
@@ -7,12 +7,9 @@
         "python": "latest",
         "dotnet": "latest"
     },
-    // "settings": {
-    //     "terminal.integrated.defaultProfile.linux": "bash",
-    //     "terminal.integrated.automationProfile.linux": {
-    //         "path": "/bin/bash"
-    //     }
-    // },
+    "remoteEnv": {
+        "AZURE_DEV_CLI_PATH": "/usr/local/share/npm-global/bin/azd"
+    },
     "extensions": [
         "/extensions/azure-dev.vsix",
         "dbaeumer.vscode-eslint",

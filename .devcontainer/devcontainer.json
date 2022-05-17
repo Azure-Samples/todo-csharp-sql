@@ -5,7 +5,8 @@
         "github-cli": "latest",
         "azure-cli": "latest",
         "python": "latest",
-        "dotnet": "latest"
+        "dotnet": "latest",
+        "docker-from-docker": "latest"
     },
     "remoteEnv": {
         "AZURE_DEV_CLI_PATH": "/usr/local/share/npm-global/bin/azd"

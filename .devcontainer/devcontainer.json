@@ -1,6 +1,11 @@
 {
     "name": "Azure Dev CLI",
-    "image": "azddevcontainersreg.azurecr.io/devcontainers:latest",
+    "build": {
+        "dockerfile": "Dockerfile",
+        "args": {
+            "VARIANT": "16-bullseye"
+        }
+    },
     "features": {
         "github-cli": "latest",
         "azure-cli": "latest",
@@ -24,7 +29,6 @@
         "esbenp.prettier-vscode",
         "ms-dotnettools.vscode-dotnet-runtime"
     ],
-    // // Use 'forwardPorts' to make a list of ports inside the container available locally.
     "forwardPorts": [
         3000,
         3100

@@ -44,7 +44,7 @@ test("Create and delete item test", async ({ page }) => {
 
   await page.goto(webUri);
 
-  await page.waitForSelector("text=My List", { state: "visible" });
+  await expect(page.locator("text=My List").toBeVisible();
 
   const guid = uuidv4();
   console.log("Creating item with text: " + guid);
@@ -56,11 +56,11 @@ test("Create and delete item test", async ({ page }) => {
   await page.locator('[placeholder="Add an item"]').press("Enter");
 
   await Promise.all([
-    await page.locator("text=" + guid).click(),
-    await page.waitForSelector("text=" + guid, { state: "visible" }),
+    page.locator("text=" + guid).click(),
+    page.waitForSelector("text=" + guid, { state: "visible" }),
   ])
   
   await page.locator('button[role="menuitem"]:has-text("Delete")').click();
 
-  await page.waitForSelector("text=" + guid, { state: "detached" });
+  await expect(page.locator("text=" + guid).toBeHidden();
 });

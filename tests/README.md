@@ -15,8 +15,8 @@ https://marketplace.visualstudio.com/items?itemName=ms-playwright.playwright
 #### Using npm
 
 ```
-npm i -g playwright
 npm i -D @playwright/test
+npx playwright install
 ```
 
 ## Run Tests
@@ -44,7 +44,7 @@ Set this env var to enable tracing:
 DEBUG=pw:api
 ```
 
-Debug scripts with: https://playwright.dev/docs/next/debug and https://playwright.dev/docs/next/trace-viewer
+Debug scripts with: https://playwright.dev/docs/debug and https://playwright.dev/docs/trace-viewer
 
 
 To open playwright inspector:

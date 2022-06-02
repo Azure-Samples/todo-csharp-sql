@@ -1,4 +1,6 @@
-FROM node:16.13-alpine AS build
+ARG BUILD_BASE='node:16.13-alpine'
+ARG IMG_BASE='nginx:alpine'
+FROM ${BUILD_BASE} AS build
 
 # make the 'app' folder the current working directory
 WORKDIR /app
@@ -14,7 +16,7 @@ RUN apk update && apk add --no-cache dos2unix \
 RUN npm ci
 RUN npm run build
 
-FROM nginx:alpine
+FROM ${IMG_BASE}
 
 WORKDIR /usr/share/nginx/html
 COPY --from=build /app/entrypoint.sh /bin

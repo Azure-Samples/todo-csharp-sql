@@ -49,21 +49,17 @@ test("Create and delete item test", async ({ page }) => {
   const guid = uuidv4();
   console.log("Creating item with text: " + guid);
 
-  // Click [placeholder="Add an item"]
   await page.locator('[placeholder="Add an item"]').click();
 
-  // Fill [placeholder="Add an item"]
   await page.locator('[placeholder="Add an item"]').fill(guid);
 
-  // Press Enter
   await page.locator('[placeholder="Add an item"]').press("Enter");
 
-  // Click text=foobar
-  await page.waitForSelector("text=" + guid, { state: "visible" });
-
-  await page.locator("text=" + guid).click();
-
-  // Delete item just created
+  await Promise.all([
+    await page.locator("text=" + guid).click(),
+    await page.waitForSelector("text=" + guid, { state: "visible" }),
+  ])
+  
   await page.locator('button[role="menuitem"]:has-text("Delete")').click();
 
   await page.waitForSelector("text=" + guid, { state: "detached" });

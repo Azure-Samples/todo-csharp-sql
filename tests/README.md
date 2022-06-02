@@ -1,27 +1,8 @@
-# Test Setup
+# ToDo Application Tests
 
-## Install Playwright 
-
-### VS Code Extension
-
-https://marketplace.visualstudio.com/items?itemName=ms-playwright.playwright
-
-### NPM Package
-
-#### Using VS Code
-1. Hit F1
-1. Choose "Install Playwright"
-
-#### Using npm
-
-```
-npm i -D @playwright/test
-npx playwright install
-```
+The included [Playwright](https://playwright.dev/) smoke test will hit the ToDo app web endpoint, create, and delete an item.
 
 ## Run Tests
-
-The included smoke test will hit the ToDo app web endpoint, create and delete an item.
 
 The endpoint it hits will be discovered in this order:
 
@@ -29,26 +10,21 @@ The endpoint it hits will be discovered in this order:
 1. Value of `REACT_APP_WEB_BASE_URL` found in default .azure environment
 1. Defaults to `https://localhost:3000`
 
-
 To run the tests:
 
 1. CD to /tests
 1. Run `npm i`
-1. Run `npx playwright test --headed`
+1. Run `npx playwright install`
+1. Run `npx playwright test`
+
+You can use the `--headed` flag to open a browser when running the tests.
 
 ## Debug Tests
 
-Set this env var to enable tracing:
+Add the `--debug` flag to run with debugging enabled. You can find out more info here: https://playwright.dev/docs/next/test-cli#reference
 
+```bash
+npx playwright test --debug
 ```
-DEBUG=pw:api
-```
 
-Debug scripts with: https://playwright.dev/docs/debug and https://playwright.dev/docs/trace-viewer
-
-
-To open playwright inspector:
-
-```
-PWDEBUG=1
-```
+More debugging references: https://playwright.dev/docs/debug and https://playwright.dev/docs/trace-viewer

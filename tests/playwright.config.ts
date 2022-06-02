@@ -1,11 +1,14 @@
-import type { PlaywrightTestConfig } from "@playwright/test";
+import { PlaywrightTestConfig } from "@playwright/test";
 import devices from "@playwright/test";
+import fs from "fs";
+import { join } from "path";
+import dotenv from "dotenv";
 
 /**
  * See https://playwright.dev/docs/test-configuration.
  */
 const config: PlaywrightTestConfig = {
-  testDir: "",
+  testDir: ".",
   /* Maximum time one test can run for. */
   timeout: 30 * 1000,
   expect: {
@@ -28,7 +31,7 @@ const config: PlaywrightTestConfig = {
     /* Maximum time each action such as `click()` can take. Defaults to 0 (no limit). */
     actionTimeout: 0,
     /* Base URL to use in actions like `await page.goto('/')`. */
-    // baseURL: 'http://localhost:3000',
+    baseURL: getBaseURL(),
 
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: "on-first-retry",
@@ -42,58 +45,38 @@ const config: PlaywrightTestConfig = {
         ...devices["Desktop Chrome"],
       },
     },
-
-    // {
-    //   name: "firefox",
-    //   use: {
-    //     ...devices["Desktop Firefox"],
-    //   },
-    // },
-
-    // {
-    //   name: "webkit",
-    //   use: {
-    //     ...devices["Desktop Safari"],
-    //   },
-    // },
-
-    // /* Test against mobile viewports. */
-    // {
-    //   name: "Mobile Chrome",
-    //   use: {
-    //     ...devices["Pixel 5"],
-    //   },
-    // },
-    // {
-    //   name: "Mobile Safari",
-    //   use: {
-    //     ...devices["iPhone 12"],
-    //   },
-    // },
-
-    // /* Test against branded browsers. */
-    // {
-    //   name: "Microsoft Edge",
-    //   use: {
-    //     channel: "msedge",
-    //   },
-    // },
-    // {
-    //   name: "Google Chrome",
-    //   use: {
-    //     channel: "chrome",
-    //   },
-    // },
   ],
-
-  /* Folder for test artifacts such as screenshots, videos, traces, etc. */
-  // outputDir: 'test-results/',
-
-  /* Run your local dev server before starting the tests */
-  // webServer: {
-  //   command: 'npm run start',
-  //   port: 3000,
-  // },
 };
+
+function getBaseURL() {
+  // If we don't have URL and aren't in CI, then try to load from environment
+  if (!process.env.REACT_APP_WEB_BASE_URL && !process.env.CI) {
+    // Try to get env in .azure folder
+    let environment = process.env.AZURE_ENV_NAME;
+    if (!environment) {
+      // Couldn't find env name in env var, let's try to load from .azure folder
+      try {
+        let configfilePath = join(__dirname, "..", ".azure", "config.json");
+        if (fs.existsSync(configfilePath)) {
+          let configFile = JSON.parse(fs.readFileSync(configfilePath, "utf-8"));
+          environment = configFile["defaultEnvironment"];
+        }
+      } catch (err) {
+        console.log("Unable to load default environment: " + err);
+      }
+    }
+
+    if (environment) {
+      let envPath = join(__dirname, "..", ".azure", environment, ".env");
+      console.log("Loading env from: " + envPath);
+      dotenv.config({ path: envPath });
+      return process.env.REACT_APP_WEB_BASE_URL;
+    }
+  }
+
+  let baseURL = process.env.REACT_APP_WEB_BASE_URL || "http://localhost:3000";
+  console.log("baseUrl: " + baseURL);
+  return baseURL;
+}
 
 export default config;

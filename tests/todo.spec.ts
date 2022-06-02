@@ -5,51 +5,49 @@ import { join } from "path";
 import { v4 as uuidv4 } from "uuid";
 
 test("Create and delete item test", async ({ page }) => {
-  // If user or CI has set the REACT_APP_WEB_BASE_URL, then use it. Otherwise, get it from the defaultEnvironment .env file
-
   let webUri = process.env.REACT_APP_WEB_BASE_URL;
 
   // If run locally, then use process.env, followed by .azure env, followed by http://localhost:300
   // If CI, then require the env var to be set
 
   if (!webUri && !process.env.CI) {
-    // No env var set, only try to get from disk if not in CI
+    // No webUri env var set, only try to get from disk if not in CI
     let environment = process.env.AZURE_ENV_NAME;
     if (!environment) {
+      // Couldn't find env, let's try to load from .azure folder
       let configFile;
       try {
         configFile = JSON.parse(
-          readFileSync(join(".azure", "config.json"), "utf-8")
+          readFileSync(join("../", ".azure", "config.json"), "utf-8")
         );
         environment = configFile["defaultEnvironment"];
+
+        if (environment) {
+          let envPath = join("../", ".azure", environment, ".env");
+
+          console.log("Loading env from: " + envPath);
+
+          config({ path: envPath });
+          webUri = process.env.REACT_APP_WEB_BASE_URL;
+        }
       } catch (err) {
-        // Unable to load default environment
-        console.error(err);
+        console.log("Unable to load default environment: " + err);
       }
     }
-
-    expect(environment).toBeDefined();
-    let envPath = join(".azure", environment, ".env");
-
-    console.log("Loading env from: " + envPath);
-
-    config({ path: envPath });
-    webUri = process.env.REACT_APP_WEB_BASE_URL || "http://localhost:3000";
   }
 
-  expect(
-    webUri,
-    "you need to set the REACT_APP_WEB_BASE_URL in shell or in .azure environment"
-  ).toBeDefined();
+  if (!webUri) {
+    webUri = "http://localhost:3000";
+  }
 
-  console.log("Using web URI: " + webUri);
+  console.log("Using Web URI: " + webUri);
 
   await page.goto(webUri);
 
   await page.waitForSelector("text=My List", { state: "visible" });
 
   const guid = uuidv4();
-  console.log(guid);
+  console.log("Creating item with text: " + guid);
 
   // Click [placeholder="Add an item"]
   await page.locator('[placeholder="Add an item"]').click();
@@ -65,7 +63,7 @@ test("Create and delete item test", async ({ page }) => {
 
   await page.locator("text=" + guid).click();
 
-  // Click button[role="menuitem"]:has-text("Delete")
+  // Delete item just created
   await page.locator('button[role="menuitem"]:has-text("Delete")').click();
 
   await page.waitForSelector("text=" + guid, { state: "detached" });

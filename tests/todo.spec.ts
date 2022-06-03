@@ -4,7 +4,9 @@ import { v4 as uuidv4 } from "uuid";
 test("Create and delete item test", async ({ page }) => {
   await page.goto("/");
 
-  await expect(page.locator("text=My List").first()).toBeVisible();
+  await expect(page.locator("text=My List").first()).toBeVisible({
+    timeout: 30000,
+  });
 
   const guid = uuidv4();
   console.log("Creating item with text: " + guid);

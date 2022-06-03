@@ -150,4 +150,5 @@ var AZURE_SQL_CONNECTION_STRING = 'Server=${sqlServer.properties.fullyQualifiedD
 output AZURE_SQL_CONNECTION_STRING string = AZURE_SQL_CONNECTION_STRING
 output APPINSIGHTS_INSTRUMENTATIONKEY string = appInsightsResources.outputs.APPINSIGHTS_INSTRUMENTATIONKEY
 output APPINSIGHTS_CONNECTION_STRING string = appInsightsResources.outputs.APPINSIGHTS_CONNECTION_STRING
+output WEB_URI string = 'https://${web.properties.defaultHostName}'
 output API_URI string = 'https://${api.properties.defaultHostName}'

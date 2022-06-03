@@ -5,7 +5,7 @@ test("Create and delete item test", async ({ page }) => {
   await page.goto("/");
 
   await expect(page.locator("text=My List").first()).toBeVisible({
-    timeout: 30000,
+    timeout: 120 * 1000,
   });
 
   const guid = uuidv4();
@@ -17,10 +17,7 @@ test("Create and delete item test", async ({ page }) => {
 
   await page.locator('[placeholder="Add an item"]').press("Enter");
 
-  await Promise.all([
-    page.locator("text=" + guid).click(),
-    page.waitForSelector("text=" + guid, { state: "visible" }),
-  ]);
+  await page.locator("text=" + guid).click();
 
   await page.locator('button[role="menuitem"]:has-text("Delete")').click();
 

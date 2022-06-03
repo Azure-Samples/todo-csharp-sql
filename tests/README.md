@@ -13,8 +13,7 @@ The endpoint it hits will be discovered in this order:
 To run the tests:
 
 1. CD to /tests
-1. Run `npm i`
-1. Run `npx playwright install`
+1. Run `npm i && npx playwright install`
 1. Run `npx playwright test`
 
 You can use the `--headed` flag to open a browser when running the tests.

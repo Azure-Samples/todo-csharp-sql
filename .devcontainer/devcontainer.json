@@ -7,7 +7,7 @@
         }
     },
     "features": {
-        "github-cli": "2.10",
+        "github-cli": "2",
         "azure-cli": "2.36",
         "python": "os-provided",
         "dotnet": "6.0",

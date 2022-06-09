@@ -1,6 +1,6 @@
 # To Do Application with C# and Azure SQL
 
-This repo contains a complete sample To Do application that demonstrates how to build an Azure solution using C#, Azure SQL for storage, and Azure Monitor for monitoring and logging.
+A complete sample To Do application that demonstrates how to build an Azure solution using C#, Azure SQL for storage, and Azure Monitor for monitoring and logging.
 
 ## ⛔ IMPORTANT
 
@@ -19,8 +19,6 @@ This application is comprised of the following Azure resources:
 - Azure App Services - To host the To Do app website and API.
 - Azure SQL - To store the To Do data in a database.
 - Azure Monitor - A cloud instrumentation service to help you monitor your application.
-
-!["Application"](assets/app.png)
 
 ## Setup
 

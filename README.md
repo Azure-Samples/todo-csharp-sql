@@ -30,18 +30,15 @@ To run this project, you first need to setup your local development environment 
 
 The following prerequisites are required to use this application.  Please ensure that you have them all installed locally.
 
-- [Azure Developer CLI](https://aka.ms/azure-dev/install) 
-
-  Windows
-  ```powershell
-  powershell -c "Set-ExecutionPolicy Bypass -Scope Process -Force; (New-Object Net.WebClient).DownloadString('https://aka.ms/install-azd.ps1') | iex"
-  ```
-
-  Linux/MacOS
-
-  ```
-  curl -fsSL https://aka.ms/install-azd.sh | bash 
-  ```
+- [Azure Developer CLI](https://aka.ms/azure-dev/install)
+  - Windows:
+    ```powershell
+    powershell -c "Set-ExecutionPolicy Bypass -Scope Process -Force; (New-Object Net.WebClient).DownloadString('https://aka.ms/install-azd.ps1') | iex"
+    ```
+  - Linux/MacOS:
+    ```
+    curl -fsSL https://aka.ms/install-azd.sh | bash 
+    ```
 - [Azure CLI (2.30.0+)](https://docs.microsoft.com/cli/azure/install-azure-cli)
 - [.NET SDK 6.0](https://dotnet.microsoft.com/download/dotnet/6.0) - for the API backend
 - [Node.js with npm (16.13.1+)](https://nodejs.org/) - for the Web frontend

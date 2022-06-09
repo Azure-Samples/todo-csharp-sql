@@ -34,6 +34,6 @@
         3000,
         3100
     ],
-    "postCreateCommand": "npm install -g https://aka.ms/azure-dev/npm --no-audit --no-fund --quiet && az extension add -n containerapp -y",
+    "postCreateCommand": "npm install -g https://aka.ms/azure-dev/npm --no-audit --no-fund --quiet",
     "remoteUser": "vscode"
 }

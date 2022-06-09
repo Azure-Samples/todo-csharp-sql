@@ -34,7 +34,7 @@ The following prerequisites are required to use this application.  Please ensure
 
   Windows
   ```powershell
-  powershell -c "if ((Get-ExecutionPolicy) -ne 'Unrestricted') { Set-ExecutionPolicy -ExecutionPolicy 'Unrestricted' -Scope 'Process' }; Invoke-WebRequest -Uri 'https://aka.ms/install-azd.ps1' -OutFile install-azd.ps1; ./install-azd.ps1;"
+  powershell -c "Set-ExecutionPolicy Bypass -Scope Process -Force; (New-Object Net.WebClient).DownloadString('https://aka.ms/install-azd.ps1') | iex"
   ```
 
   Linux/MacOS

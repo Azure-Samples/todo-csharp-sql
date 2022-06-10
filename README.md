@@ -28,24 +28,21 @@ To run this project, you first need to setup your local development environment 
 
 ### Prerequisites
 
-Please install the following prerequisites on your local machine.
+The following prerequisites are required to use this application.  Please ensure that you have them all installed locally.
 
-1. Install [Git](https://git-scm.com/)
-1. Install [GitHub CLI](https://github.com/cli/cli)
-1. Install [.NET SDK 6.0](https://dotnet.microsoft.com/en-us/download/dotnet/6.0)
-1. Install [Node.js with npm (v 16.13.1 LTS)](https://nodejs.org/)
-1. Install [Azure CLI (v 2.30.0+)](https://docs.microsoft.com/cli/azure/install-azure-cli)
-1. Install Azure Dev CLI Extension
-
-   This allows you to run all of the `az dev` commands that you will see below.
-
-   Run this command to install it:
-
-   ```bash
-   az config set extension.index_url=https://azuresdkreleasepreview.blob.core.windows.net/azd/whl/latest/index.json
-   az extension add --name azure-dev
-   az config unset extension.index_url
-   ```
+- [Azure Developer CLI](https://aka.ms/azure-dev/install)
+  - Windows:
+    ```powershell
+    powershell -c "Set-ExecutionPolicy Bypass Process -Force; irm 'https://aka.ms/install-azd.ps1' | iex"
+    ```
+  - Linux/MacOS:
+    ```
+    curl -fsSL https://aka.ms/install-azd.sh | bash 
+    ```
+- [Azure CLI (2.30.0+)](https://docs.microsoft.com/cli/azure/install-azure-cli)
+- [.NET SDK 6.0](https://dotnet.microsoft.com/download/dotnet/6.0) - for the API backend
+- [Node.js with npm (16.13.1+)](https://nodejs.org/) - for the Web frontend
+- [Git (2.36.1+)](https://git-scm.com/)
 
 ### Project Folder
 

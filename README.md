@@ -33,7 +33,7 @@ The following prerequisites are required to use this application.  Please ensure
 - [Azure Developer CLI](https://aka.ms/azure-dev/install)
   - Windows:
     ```powershell
-    powershell -c "Set-ExecutionPolicy Bypass -Scope Process -Force; (New-Object Net.WebClient).DownloadString('https://aka.ms/install-azd.ps1') | iex"
+    powershell -c "Set-ExecutionPolicy Bypass Process -Force; irm 'https://aka.ms/install-azd.ps1' | iex"
     ```
   - Linux/MacOS:
     ```

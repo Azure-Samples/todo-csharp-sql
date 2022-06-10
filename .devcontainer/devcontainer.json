@@ -34,6 +34,6 @@
         3000,
         3100
     ],
-    "postCreateCommand": "az extension add -n containerapp -y",
+    "postCreateCommand": "",
     "remoteUser": "vscode"
 }

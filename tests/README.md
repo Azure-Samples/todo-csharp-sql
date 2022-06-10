@@ -8,7 +8,7 @@ The endpoint it hits will be discovered in this order:
 
 1. Value of `REACT_APP_WEB_BASE_URL` environment variable
 1. Value of `REACT_APP_WEB_BASE_URL` found in default .azure environment
-1. Defaults to `https://localhost:3000`
+1. Defaults to `http://localhost:3000`
 
 To run the tests:
 

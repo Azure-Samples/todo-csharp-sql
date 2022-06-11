@@ -9,7 +9,9 @@ services:
     dist: build
     language: js
     host: appservice
+    resourceName: ${AZURE_ENV_NAME}web
   api:
     project: src/api
     language: csharp
     host: appservice
+    resourceName: ${AZURE_ENV_NAME}api

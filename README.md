@@ -1,4 +1,4 @@
-# To Do Application with C# and Azure SQL
+# To Do Application with C# and Azure SQL on Azure App Service
 
 A complete sample To Do application that demonstrates how to build an Azure solution using C#, Azure SQL for storage, and Azure Monitor for monitoring and logging.
 

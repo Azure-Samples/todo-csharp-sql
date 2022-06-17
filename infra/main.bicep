@@ -10,16 +10,22 @@ param name string
 param location string
 
 resource resourceGroup 'Microsoft.Resources/resourceGroups@2020-06-01' = {
-  name: '${name}rg'
+  name: '${name}-rg'
   location: location
 }
 
+var resourceToken = toLower(uniqueString(subscription().id, name))
+var tags = {
+  'azd-env-name': name
+}
+
 module resources './resources.bicep' = {
-  name: '${resourceGroup.name}res'
+  name: 'resources-${resourceToken}'
   scope: resourceGroup
   params: {
-    name: toLower(name)
     location: location
+    resourceToken: resourceToken
+    tags: tags
   }
 }
 

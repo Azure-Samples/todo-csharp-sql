@@ -12,6 +12,7 @@ param location string
 resource resourceGroup 'Microsoft.Resources/resourceGroups@2020-06-01' = {
   name: '${name}-rg'
   location: location
+  tags: tags
 }
 
 var resourceToken = toLower(uniqueString(subscription().id, name))

@@ -5,8 +5,12 @@ targetScope = 'subscription'
 @description('Prefix for all resources, i.e. {name}storage')
 param name string
 
-@minLength(1)
 @description('Primary location for all resources')
+@metadata({
+  azd: {
+    type: 'location'
+  }
+})
 param location string
 
 resource resourceGroup 'Microsoft.Resources/resourceGroups@2020-06-01' = {
@@ -29,4 +33,3 @@ output APPINSIGHTS_CONNECTION_STRING string = resources.outputs.APPINSIGHTS_CONN
 output REACT_APP_WEB_BASE_URL string = resources.outputs.WEB_URI
 output REACT_APP_API_BASE_URL string = resources.outputs.API_URI
 output REACT_APP_APPINSIGHTS_INSTRUMENTATIONKEY string = resources.outputs.APPINSIGHTS_INSTRUMENTATIONKEY
-output AZURE_LOCATION string = location

@@ -1,8 +1,8 @@
 targetScope = 'subscription'
 
 @minLength(1)
-@maxLength(17)
-@description('Prefix for all resources, i.e. {name}storage')
+@maxLength(64)
+@description('Name of the the environment which is used to generate a short unqiue hash used in all resources.')
 param name string
 
 @description('Primary location for all resources')
@@ -14,16 +14,23 @@ param name string
 param location string
 
 resource resourceGroup 'Microsoft.Resources/resourceGroups@2020-06-01' = {
-  name: '${name}rg'
+  name: '${name}-rg'
   location: location
+  tags: tags
+}
+
+var resourceToken = toLower(uniqueString(subscription().id, name, location))
+var tags = {
+  'azd-env-name': name
 }
 
 module resources './resources.bicep' = {
-  name: '${resourceGroup.name}res'
+  name: 'resources-${resourceToken}'
   scope: resourceGroup
   params: {
-    name: toLower(name)
     location: location
+    resourceToken: resourceToken
+    tags: tags
   }
 }
 

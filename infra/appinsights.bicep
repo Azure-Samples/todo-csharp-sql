@@ -1,9 +1,11 @@
-param name string
+param resourceToken string
 param location string
+param tags object
 
 resource appInsights 'Microsoft.Insights/components@2020-02-02' = {
-  name: '${name}insights'
+  name: 'appi-${resourceToken}'
   location: location
+  tags: tags
   kind: 'web'
   properties: {
     Application_Type: 'web'
@@ -11,8 +13,9 @@ resource appInsights 'Microsoft.Insights/components@2020-02-02' = {
 }
 
 resource appInsightsDashboard 'Microsoft.Portal/dashboards@2020-09-01-preview' = {
-  name: '${name}insightsdash'
+  name: 'appid-${resourceToken}'
   location: location
+  tags: tags
   properties: {
     lenses: [
       {

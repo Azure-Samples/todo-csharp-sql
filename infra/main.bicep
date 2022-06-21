@@ -1,7 +1,7 @@
 targetScope = 'subscription'
 
 @minLength(1)
-@maxLength(50)
+@maxLength(64)
 @description('Name of the the environment which is used to generate a short unqiue hash used in all resources.')
 param name string
 

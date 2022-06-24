@@ -2,7 +2,7 @@
 
 This document will show you how to configure an Azure DevOps pipeline that uses the Azure Developer CLI. This logic will eventually be integrated into the `azd pipeline config` command.
 
-You will find a default Azure DevOps pipeline file in `./.azdo/azure-dev.yml`. It will provision your Azure resources and deploy your code upon pushes and pull requests.
+You will find a default Azure DevOps pipeline file in `./.azdo/pipelines/azure-dev.yml`. It will provision your Azure resources and deploy your code upon pushes and pull requests.
 
 You are welcome to use that file as-is or modify it to suit your needs.
 
@@ -169,7 +169,7 @@ First set the connection name by running the following command:
 export AZURE_DEVOPS_SERVICE_CONNECTION_NAME=azconnection
 ```
 
-> If you change `AZURE_DEVOPS_SERVICE_CONNECTION_NAME` to something other than `azconnection`, then you also need to update the `azureSubscription` value in `./.azdo/azure-dev.yml` to match that new name.
+> If you change `AZURE_DEVOPS_SERVICE_CONNECTION_NAME` to something other than `azconnection`, then you also need to update the `azureSubscription` value in `./.azdo/pipelines/azure-dev.yml` to match that new name.
 
 Now, let's create the service connection:
 
@@ -199,7 +199,7 @@ export AZURE_DEVOPS_PIPELINE_NAME=azdpipeline
 Now let's create the pipeline by running the following command:
 
 ```bash
-az pipelines create --name ${AZURE_DEVOPS_PIPELINE_NAME} --branch ${BRANCH_NAME} --project ${AZURE_DEVOPS_PROJECT_NAME} --org ${AZURE_DEVOPS_ORG_URI} --repository ${AZURE_DEVOPS_REPO_NAME} --repository-type tfsgit --yml-path "./.azdo/azure-dev.yml" --service-connection ${AZURE_DEVOPS_SERVICE_CONNECTION_NAME} --skip-first-run
+az pipelines create --name ${AZURE_DEVOPS_PIPELINE_NAME} --branch ${BRANCH_NAME} --project ${AZURE_DEVOPS_PROJECT_NAME} --org ${AZURE_DEVOPS_ORG_URI} --repository ${AZURE_DEVOPS_REPO_NAME} --repository-type tfsgit --yml-path "./.azdo/pipelines/azure-dev.yml" --service-connection ${AZURE_DEVOPS_SERVICE_CONNECTION_NAME} --skip-first-run
 ```
 
 ## Set Pipeline Environment Variables
@@ -307,7 +307,7 @@ You can copy and paste the following into a text editor so you can easily fill i
 # AZURE DEVOPS PIPELINE
     export AZURE_DEVOPS_PIPELINE_NAME=azdpipeline
 
-    az pipelines create --name ${AZURE_DEVOPS_PIPELINE_NAME} --branch ${BRANCH_NAME} --project ${AZURE_DEVOPS_PROJECT_NAME} --org ${AZURE_DEVOPS_ORG_URI} --repository ${AZURE_DEVOPS_REPO_NAME} --repository-type tfsgit --yml-path "./.azdo/azure-dev.yml" --service-connection ${AZURE_DEVOPS_SERVICE_CONNECTION_NAME} --skip-first-run
+    az pipelines create --name ${AZURE_DEVOPS_PIPELINE_NAME} --branch ${BRANCH_NAME} --project ${AZURE_DEVOPS_PROJECT_NAME} --org ${AZURE_DEVOPS_ORG_URI} --repository ${AZURE_DEVOPS_REPO_NAME} --repository-type tfsgit --yml-path "./.azdo/pipelines/azure-dev.yml" --service-connection ${AZURE_DEVOPS_SERVICE_CONNECTION_NAME} --skip-first-run
 
 # AZURE DEVOPS PIPELINE VARIABLES
     az pipelines variable create --name AZURE_SUBSCRIPTION_ID --org ${AZURE_DEVOPS_ORG_URI} --pipeline-name ${AZURE_DEVOPS_PIPELINE_NAME} --project ${AZURE_DEVOPS_PROJECT_NAME} --value ${AZURE_SUBSCRIPTION_ID}

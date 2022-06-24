@@ -62,9 +62,9 @@ export AZURE_SERVICE_PRINCIPAL_ID=
 export AZURE_DEVOPS_EXT_AZURE_RM_SERVICE_PRINCIPAL_KEY=
 ```
 
-> AZURE_SERVICE_PRINCIPAL_ID: The ID of the service principal you just created or existing one that you want to use.
+> AZURE_SERVICE_PRINCIPAL_ID: The ID of the service principal you just created or existing one that you want to use. It will be the `appId` that is returned from the `create-for-rbac` command.
 
-> AZURE_DEVOPS_EXT_AZURE_RM_SERVICE_PRINCIPAL_KEY: The service principal password
+> AZURE_DEVOPS_EXT_AZURE_RM_SERVICE_PRINCIPAL_KEY: The service principal password. It will be the `password` that is returned from the `create-for-rbac` command.
 
 ## Create or Use Existing Azure DevOps Organization
 

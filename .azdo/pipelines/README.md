@@ -207,9 +207,9 @@ az pipelines create --name ${AZURE_DEVOPS_PIPELINE_NAME} --branch ${BRANCH_NAME}
 Run the following commands to set the environment variables in the Azure DevOps pipeline needed to run the pipeline and target the appropriate environment.
 
 ```bash
-az pipelines variable create --name AZURE_SUBSCRIPTION_ID --org ${AZURE_DEVOPS_ORG_URI} --pipeline-name ${AZURE_DEVOPS_PIPELINE_NAME} --project ${AZURE_DEVOPS_PROJECT_NAME} --value ${AZURE_SUBSCRIPTION_ID}
-az pipelines variable create --name AZURE_LOCATION --org ${AZURE_DEVOPS_ORG_URI} --pipeline-name ${AZURE_DEVOPS_PIPELINE_NAME} --project ${AZURE_DEVOPS_PROJECT_NAME} --value ${AZURE_LOCATION}
-az pipelines variable create --name AZURE_ENV_NAME --org ${AZURE_DEVOPS_ORG_URI} --pipeline-name ${AZURE_DEVOPS_PIPELINE_NAME} --project ${AZURE_DEVOPS_PROJECT_NAME} --value ${AZURE_ENV_NAME}
+az pipelines variable create --name AZURE_SUBSCRIPTION_ID --org ${AZURE_DEVOPS_ORG_URI} --pipeline-name ${AZURE_DEVOPS_PIPELINE_NAME} --project ${AZURE_DEVOPS_PROJECT_NAME} --value ${AZURE_SUBSCRIPTION_ID} --allow-override true
+az pipelines variable create --name AZURE_LOCATION --org ${AZURE_DEVOPS_ORG_URI} --pipeline-name ${AZURE_DEVOPS_PIPELINE_NAME} --project ${AZURE_DEVOPS_PROJECT_NAME} --value ${AZURE_LOCATION} --allow-override true
+az pipelines variable create --name AZURE_ENV_NAME --org ${AZURE_DEVOPS_ORG_URI} --pipeline-name ${AZURE_DEVOPS_PIPELINE_NAME} --project ${AZURE_DEVOPS_PROJECT_NAME} --value ${AZURE_ENV_NAME} --allow-override true
 ```
 
 ## Create Azure DevOps Build Policy
@@ -310,9 +310,9 @@ You can copy and paste the following into a text editor so you can easily fill i
     az pipelines create --name ${AZURE_DEVOPS_PIPELINE_NAME} --branch ${BRANCH_NAME} --project ${AZURE_DEVOPS_PROJECT_NAME} --org ${AZURE_DEVOPS_ORG_URI} --repository ${AZURE_DEVOPS_REPO_NAME} --repository-type tfsgit --yml-path "./.azdo/pipelines/azure-dev.yml" --service-connection ${AZURE_DEVOPS_SERVICE_CONNECTION_NAME} --skip-first-run
 
 # AZURE DEVOPS PIPELINE VARIABLES
-    az pipelines variable create --name AZURE_SUBSCRIPTION_ID --org ${AZURE_DEVOPS_ORG_URI} --pipeline-name ${AZURE_DEVOPS_PIPELINE_NAME} --project ${AZURE_DEVOPS_PROJECT_NAME} --value ${AZURE_SUBSCRIPTION_ID}
-    az pipelines variable create --name AZURE_LOCATION --org ${AZURE_DEVOPS_ORG_URI} --pipeline-name ${AZURE_DEVOPS_PIPELINE_NAME} --project ${AZURE_DEVOPS_PROJECT_NAME} --value ${AZURE_LOCATION}
-    az pipelines variable create --name AZURE_ENV_NAME --org ${AZURE_DEVOPS_ORG_URI} --pipeline-name ${AZURE_DEVOPS_PIPELINE_NAME} --project ${AZURE_DEVOPS_PROJECT_NAME} --value ${AZURE_ENV_NAME}
+    az pipelines variable create --name AZURE_SUBSCRIPTION_ID --org ${AZURE_DEVOPS_ORG_URI} --pipeline-name ${AZURE_DEVOPS_PIPELINE_NAME} --project ${AZURE_DEVOPS_PROJECT_NAME} --value ${AZURE_SUBSCRIPTION_ID} --allow-override true
+    az pipelines variable create --name AZURE_LOCATION --org ${AZURE_DEVOPS_ORG_URI} --pipeline-name ${AZURE_DEVOPS_PIPELINE_NAME} --project ${AZURE_DEVOPS_PROJECT_NAME} --value ${AZURE_LOCATION} --allow-override true
+    az pipelines variable create --name AZURE_ENV_NAME --org ${AZURE_DEVOPS_ORG_URI} --pipeline-name ${AZURE_DEVOPS_PIPELINE_NAME} --project ${AZURE_DEVOPS_PROJECT_NAME} --value ${AZURE_ENV_NAME} --allow-override true
 
 # AZURE DEVOPS BUILD POLICY
     export AZURE_DEVOPS_REPO_ID=$(az repos show --repository ${AZURE_DEVOPS_REPO_NAME} --project ${AZURE_DEVOPS_PROJECT_NAME} --org ${AZURE_DEVOPS_ORG_URI} --query id -o tsv)

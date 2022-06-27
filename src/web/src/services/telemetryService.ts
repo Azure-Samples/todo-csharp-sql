@@ -1,21 +1,24 @@
 import { ReactPlugin } from "@microsoft/applicationinsights-react-js";
 import { ApplicationInsights, Snippet, ITelemetryItem } from "@microsoft/applicationinsights-web";
+import { DistributedTracingModes } from "@microsoft/applicationinsights-common";
 import { createBrowserHistory } from 'history'
 import config from "../config";
 
 const plugin = new ReactPlugin();
-let appInsights: ApplicationInsights;
+let applicationInsights: ApplicationInsights;
 export const reactPlugin = plugin;
 
-export const getAppInsights = (): ApplicationInsights => {
+export const getApplicationInsights = (): ApplicationInsights => {
     const browserHistory = createBrowserHistory({ window: window });
-    if (appInsights) {
-        return appInsights;
+    if (applicationInsights) {
+        return applicationInsights;
     }
 
-    const appInsightsConfig: Snippet = {
+    const ApplicationInsightsConfig: Snippet = {
         config: {
-            instrumentationKey: config.observability.instrumentationKey,
+            connectionString: config.observability.connectionString,
+            enableCorsCorrelation: true,
+            distributedTracingMode: DistributedTracingModes.W3C, 
             extensions: [plugin],
             extensionConfig: {
                 [plugin.identifier]: { history: browserHistory }
@@ -23,10 +26,10 @@ export const getAppInsights = (): ApplicationInsights => {
         }
     }
 
-    appInsights = new ApplicationInsights(appInsightsConfig);
-    appInsights.loadAppInsights();
+    applicationInsights = new ApplicationInsights(ApplicationInsightsConfig);
+    applicationInsights.loadAppInsights();
 
-    appInsights.addTelemetryInitializer((telemetry: ITelemetryItem) => {
+    applicationInsights.addTelemetryInitializer((telemetry: ITelemetryItem) => {
         if (!telemetry) {
             return;
         }
@@ -35,15 +38,15 @@ export const getAppInsights = (): ApplicationInsights => {
         }
     });
 
-    return appInsights;
+    return applicationInsights;
 }
 
 export const trackEvent = (eventName: string, properties?: { [key: string]: unknown }): void => {
-    if (!appInsights) {
+    if (!applicationInsights) {
         return;
     }
 
-    appInsights.trackEvent({
+    applicationInsights.trackEvent({
         name: eventName,
         properties: properties
     });

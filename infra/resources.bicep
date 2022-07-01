@@ -2,7 +2,7 @@ param location string
 param resourceToken string
 param tags object
 
-resource web 'Microsoft.Web/sites@2021-01-15' = {
+resource web 'Microsoft.Web/sites@2021-03-01' = {
   name: 'app-web-${resourceToken}'
   location: location
   tags: union(tags, {
@@ -50,7 +50,7 @@ resource web 'Microsoft.Web/sites@2021-01-15' = {
   }
 }
 
-resource api 'Microsoft.Web/sites@2021-01-15' = {
+resource api 'Microsoft.Web/sites@2021-03-01' = {
   name: 'app-api-${resourceToken}'
   location: location
   tags: union(tags, {
@@ -103,7 +103,7 @@ resource api 'Microsoft.Web/sites@2021-01-15' = {
   }
 }
 
-resource appServicePlan 'Microsoft.Web/serverFarms@2020-06-01' = {
+resource appServicePlan 'Microsoft.Web/serverfarms@2021-03-01' = {
   name: 'plan-${resourceToken}'
   location: location
   tags: tags
@@ -121,7 +121,8 @@ module appInsightsResources './appinsights.bicep' = {
   }
 }
 
-resource sqlServer 'Microsoft.Sql/servers@2021-05-01-preview' = {
+// 2021-11-01-preview because that is latest valid version
+resource sqlServer 'Microsoft.Sql/servers@2021-11-01-preview' = {
   name: 'sql-${resourceToken}'
   location: location
   tags: tags

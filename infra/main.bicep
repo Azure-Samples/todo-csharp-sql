@@ -9,15 +9,16 @@ param name string
 @description('Primary location for all resources')
 param location string
 
-resource resourceGroup 'Microsoft.Resources/resourceGroups@2020-06-01' = {
+var resourceToken = toLower(uniqueString(subscription().id, name, location))
+
+var tags = {
+  'azd-env-name': name
+}
+
+resource resourceGroup 'Microsoft.Resources/resourceGroups@2021-04-01' = {
   name: '${name}-rg'
   location: location
   tags: tags
-}
-
-var resourceToken = toLower(uniqueString(subscription().id, name, location))
-var tags = {
-  'azd-env-name': name
 }
 
 module resources './resources.bicep' = {

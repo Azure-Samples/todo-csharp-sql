@@ -5,7 +5,7 @@ test("Create and delete item test", async ({ page }) => {
   await page.goto("/");
 
   await expect(page.locator("text=My List").first()).toBeVisible({
-    timeout: 120 * 1000,
+    timeout: 240 * 1000,
   });
 
   const guid = uuidv4();

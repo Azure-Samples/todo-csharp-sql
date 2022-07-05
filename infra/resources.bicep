@@ -1,9 +1,13 @@
-param name string
 param location string
+param resourceToken string
+param tags object
 
 resource web 'Microsoft.Web/sites@2021-01-15' = {
-  name: '${name}web'
+  name: 'app-web-${resourceToken}'
   location: location
+  tags: union(tags, {
+      'azd-service-name': 'web'
+    })
   properties: {
     serverFarmId: appServicePlan.id
     siteConfig: {
@@ -47,8 +51,11 @@ resource web 'Microsoft.Web/sites@2021-01-15' = {
 }
 
 resource api 'Microsoft.Web/sites@2021-01-15' = {
-  name: '${name}api'
+  name: 'app-api-${resourceToken}'
   location: location
+  tags: union(tags, {
+      'azd-service-name': 'api'
+    })
   kind: 'app,linux'
   properties: {
     serverFarmId: appServicePlan.id
@@ -97,24 +104,27 @@ resource api 'Microsoft.Web/sites@2021-01-15' = {
 }
 
 resource appServicePlan 'Microsoft.Web/serverFarms@2020-06-01' = {
-  name: '${name}plan'
+  name: 'plan-${resourceToken}'
   location: location
+  tags: tags
   sku: {
     name: 'B1'
   }
 }
 
 module appInsightsResources './appinsights.bicep' = {
-  name: '${name}insightsres'
+  name: 'appinsights-${resourceToken}'
   params: {
-    name: toLower(name)
+    resourceToken: resourceToken
     location: location
+    tags: tags
   }
 }
 
 resource sqlServer 'Microsoft.Sql/servers@2021-05-01-preview' = {
-  name: '${name}sql'
+  name: 'sql-${resourceToken}'
   location: location
+  tags: tags
   properties: {
     version: '12.0'
     minimalTlsVersion: '1.2'

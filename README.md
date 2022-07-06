@@ -2,10 +2,6 @@
 
 A complete sample To Do application that demonstrates how to build an Azure solution using C#, Azure SQL for storage, and Azure Monitor for monitoring and logging.
 
-## ⛔ IMPORTANT
-
-> ### Please keep all repositories and templates you create on GitHub.com _private_
-
 ## To Do Application
 
 Here's the web frontend of this To Do application:

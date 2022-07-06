@@ -1,3 +1,4 @@
+using Microsoft.ApplicationInsights.AspNetCore.Extensions;
 using Microsoft.EntityFrameworkCore;
 using SimpleTodo.Api;
 
@@ -10,7 +11,8 @@ builder.Services.AddDbContext<TodoDb>(options =>
 });
 
 builder.Services.AddControllers();
-builder.Services.AddApplicationInsightsTelemetry(builder.Configuration["APPINSIGHTS_INSTRUMENTATIONKEY"]);
+var options = new ApplicationInsightsServiceOptions { ConnectionString = builder.Configuration["APPLICATIONINSIGHTS_CONNECTION_STRING"] };
+builder.Services.AddApplicationInsightsTelemetry(options);
 
 var app = builder.Build();
 

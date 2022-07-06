@@ -3,7 +3,7 @@ export interface ApiConfig {
 }
 
 export interface ObservabilityConfig {
-    instrumentationKey: string
+    connectionString: string
 }
 
 export interface AppConfig {
@@ -16,7 +16,7 @@ const config: AppConfig = {
         baseUrl: window.ENV_CONFIG.REACT_APP_API_BASE_URL || 'http://localhost:3100'
     },
     observability: {
-        instrumentationKey: window.ENV_CONFIG.REACT_APP_APPINSIGHTS_INSTRUMENTATIONKEY || ''
+        connectionString: window.ENV_CONFIG.REACT_APP_APPLICATIONINSIGHTS_CONNECTION_STRING || ''
     }
 }
 

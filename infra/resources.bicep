@@ -21,7 +21,7 @@ resource web 'Microsoft.Web/sites@2021-03-01' = {
     name: 'appsettings'
     properties: {
       'SCM_DO_BUILD_DURING_DEPLOYMENT': 'false'
-      'APPINSIGHTS_INSTRUMENTATIONKEY': appInsightsResources.outputs.APPINSIGHTS_INSTRUMENTATIONKEY
+      'APPLICATIONINSIGHTS_CONNECTION_STRING': applicationInsightsResources.outputs.APPLICATIONINSIGHTS_CONNECTION_STRING
     }
   }
 
@@ -74,7 +74,7 @@ resource api 'Microsoft.Web/sites@2021-03-01' = {
     name: 'appsettings'
     properties: {
       'AZURE_SQL_CONNECTION_STRING': AZURE_SQL_CONNECTION_STRING
-      'APPINSIGHTS_INSTRUMENTATIONKEY': appInsightsResources.outputs.APPINSIGHTS_INSTRUMENTATIONKEY
+      'APPLICATIONINSIGHTS_CONNECTION_STRING': applicationInsightsResources.outputs.APPLICATIONINSIGHTS_CONNECTION_STRING
     }
   }
 
@@ -112,12 +112,28 @@ resource appServicePlan 'Microsoft.Web/serverfarms@2021-03-01' = {
   }
 }
 
-module appInsightsResources './appinsights.bicep' = {
-  name: 'appinsights-${resourceToken}'
+resource logAnalyticsWorkspace 'Microsoft.OperationalInsights/workspaces@2020-03-01-preview' = {
+  name: 'log-${resourceToken}'
+  location: location
+  tags: tags
+  properties: any({
+    retentionInDays: 30
+    features: {
+      searchVersion: 1
+    }
+    sku: {
+      name: 'PerGB2018'
+    }
+  })
+}
+
+module applicationInsightsResources './applicationinsights.bicep' = {
+  name: 'applicationinsights-${resourceToken}'
   params: {
     resourceToken: resourceToken
     location: location
     tags: tags
+    workspaceId: logAnalyticsWorkspace.id
   }
 }
 
@@ -159,7 +175,6 @@ resource sqlServer 'Microsoft.Sql/servers@2021-11-01-preview' = {
 var AZURE_SQL_CONNECTION_STRING = 'Server=${sqlServer.properties.fullyQualifiedDomainName}; Authentication=Active Directory Default; Database=${sqlServer::database.name};'
 
 output AZURE_SQL_CONNECTION_STRING string = AZURE_SQL_CONNECTION_STRING
-output APPINSIGHTS_INSTRUMENTATIONKEY string = appInsightsResources.outputs.APPINSIGHTS_INSTRUMENTATIONKEY
-output APPINSIGHTS_CONNECTION_STRING string = appInsightsResources.outputs.APPINSIGHTS_CONNECTION_STRING
+output APPLICATIONINSIGHTS_CONNECTION_STRING string = applicationInsightsResources.outputs.APPLICATIONINSIGHTS_CONNECTION_STRING
 output WEB_URI string = 'https://${web.properties.defaultHostName}'
 output API_URI string = 'https://${api.properties.defaultHostName}'

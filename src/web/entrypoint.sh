@@ -10,22 +10,10 @@ function generateOutput {
     echo -e "window.$CONFIG_ROOT = {" >$OUTPUT_FILE
     for line in $1; do
         if [[ $line = REACT_APP_* ]]; then
-            IFS='='
-            key=""
-            value=""
-            index=0
-            # Basic sh does not support arrays :(
-            for part in $line; do
-                if [ $index -eq 0 ]; then
-                    key=$part
-                elif [ $index -eq 1 ]; then
-                    value=$part
-                fi
-                index=$(expr $index + 1)
-            done
+            key=${line%%=*}
+            value=${line#*=}
             echo " - Found '$key'"
             echo -e "  $key: '$value'," >>$OUTPUT_FILE
-            unset IFS
         fi
     done
     echo -e "}" >>$OUTPUT_FILE

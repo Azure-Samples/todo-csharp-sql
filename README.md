@@ -138,12 +138,20 @@ Run the following command to delete the application from your Azure Subscription
 az dev down
 ```
 
-#### Remove the Azure Dev CLI extension
+#### Uninstall Azure Developer CLI
 
-Run the following command to remove the Azure Dev CLI extension:
+To uninstall the Azure Developer CLI:
 
-```bash
-az extension remove --name azure-dev
+Windows:
+
+```
+powershell -c "Set-ExecutionPolicy Bypass Process -Force; irm 'https://aka.ms/uninstall-azd.ps1' | iex"
+```
+
+Linux/MacOS:
+
+```
+curl -fsSL https://aka.ms/uninstall-azd.sh | bash
 ```
 
 ### Pipelines
@@ -153,3 +161,4 @@ Coming soon...
 ### Run/Debug/Test
 
 Coming soon...
+

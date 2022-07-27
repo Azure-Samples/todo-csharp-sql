@@ -2,7 +2,7 @@ param location string
 param resourceToken string
 param tags object
 
-var abbrs = loadJsonContent('abbreviations.json')
+var abbrs = loadJsonContent('infra/abbreviations.json')
 
 resource web 'Microsoft.Web/sites@2021-03-01' = {
   name: '${abbrs.webSitesAppService}web-${resourceToken}'

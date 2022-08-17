@@ -24,7 +24,6 @@
         "ms-vscode.vscode-node-azure-pack",
         "ms-dotnettools.csharp",
         "ms-dotnettools.vscode-dotnet-runtime"
-
     ],
     "forwardPorts": [
         3000,

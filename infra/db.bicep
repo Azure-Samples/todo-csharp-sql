@@ -9,7 +9,7 @@ param sqlAdminPassword string
 @secure()
 param appUserPassword string
 
-var abbrs = loadJsonContent('abbreviations.json')
+var abbrs = loadJsonContent('./abbreviations.json')
 
 resource sqlServer 'Microsoft.Sql/servers@2022-02-01-preview' = {
   name: '${abbrs.sqlServers}${resourceToken}'
@@ -76,7 +76,7 @@ resource sqlDeploymentScript 'Microsoft.Resources/deploymentScripts@2020-10-01' 
 wget https://github.com/microsoft/go-sqlcmd/releases/download/v0.8.1/sqlcmd-v0.8.1-linux-x64.tar.bz2
 tar x -f sqlcmd-v0.8.1-linux-x64.tar.bz2 -C .
 
-cat <<SCRIPT_END > initDb.sql
+cat <<SCRIPT_END > ./initDb.sql
 drop user ${APPUSERNAME}
 go
 create user ${APPUSERNAME} with password = '${APPUSERPASSWORD}'
@@ -85,7 +85,7 @@ alter role db_owner add member ${APPUSERNAME}
 go
 SCRIPT_END
 
-sqlcmd -S ${DBSERVER} -d ToDo -U ${SQLADMIN} -i initDb.sql
+./sqlcmd -S ${DBSERVER} -d ToDo -U ${SQLADMIN} -i ./initDb.sql
     '''
   }
 }

@@ -8,7 +8,7 @@ param sqlAdminPassword string
 param appUserPassword string
 
 var sqlConnectionStringSecretName = 'AZURE-SQL-CONNECTION-STRING'
-var abbrs = loadJsonContent('abbreviations.json')
+var abbrs = loadJsonContent('./abbreviations.json')
 
 resource web 'Microsoft.Web/sites@2022-03-01' = {
   name: '${abbrs.webSitesAppService}web-${resourceToken}'
@@ -133,7 +133,7 @@ resource logAnalyticsWorkspace 'Microsoft.OperationalInsights/workspaces@2021-12
   })
 }
 
-module applicationInsightsResources 'applicationinsights.bicep' = {
+module applicationInsightsResources './applicationinsights.bicep' = {
   name: 'applicationinsights-resources'
   params: {
     resourceToken: resourceToken
@@ -200,7 +200,7 @@ resource keyVault 'Microsoft.KeyVault/vaults@2021-10-01' = {
   }
 }
 
-module db 'db.bicep' = {
+module db './db.bicep' = {
   name: 'db-${resourceToken}'
   params: {
     location: location

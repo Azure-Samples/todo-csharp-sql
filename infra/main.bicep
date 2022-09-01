@@ -50,3 +50,4 @@ output REACT_APP_APPLICATIONINSIGHTS_CONNECTION_STRING string = resources.output
 output AZURE_LOCATION string = location
 output AZURE_KEY_VAULT_ENDPOINT string = resources.outputs.AZURE_KEY_VAULT_ENDPOINT
 output AZURE_SQL_CONNECTION_STRING_KEY string = resources.outputs.AZURE_SQL_CONNECTION_STRING_KEY
+output KEYVAULT_NAME string = resources.outputs.KEYVAULT_NAME

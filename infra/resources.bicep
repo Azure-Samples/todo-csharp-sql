@@ -185,6 +185,13 @@ resource keyVault 'Microsoft.KeyVault/vaults@2021-10-01' = {
     }
   }
 
+  resource appUserPasswordSecret 'secrets' = {
+    name: 'appUserPassword'
+    properties: {
+      value: appUserPassword
+    }
+  }
+
   resource sqlAzureConnectionStringSercret 'secrets' = {
     name: sqlConnectionStringSecretName
     properties: {
@@ -209,3 +216,4 @@ output APPLICATIONINSIGHTS_CONNECTION_STRING string = applicationInsightsResourc
 output WEB_URI string = 'https://${web.properties.defaultHostName}'
 output API_URI string = 'https://${api.properties.defaultHostName}'
 output AZURE_SQL_CONNECTION_STRING_KEY string = sqlConnectionStringSecretName
+output KEYVAULT_NAME string = keyVault.name

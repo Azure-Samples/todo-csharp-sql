@@ -12,10 +12,10 @@
       "value": "${AZURE_PRINCIPAL_ID}"
     },
     "sqlAdminPassword" : {
-      "value": "$(randomPassword)"
+      "value": "$(secretOrRandomPassword ${KEYVAULT_NAME} sqlAdminPassword)"
     },
     "appUserPassword" : {
-      "value": "$(randomPassword)"
+      "value": "$(secretOrRandomPassword ${KEYVAULT_NAME} appUserPassword)"
     }
   }
 }

@@ -5,11 +5,11 @@ metadata:
   template: todo-csharp-sql@0.0.1-beta
 services:
   web:
-    project: src/web
+    project: ./src/web
     dist: build
     language: js
     host: appservice
   api:
-    project: src/api
+    project: ./src/api
     language: csharp
     host: appservice

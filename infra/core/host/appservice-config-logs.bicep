@@ -1,7 +1,7 @@
-param resourceName string
+param appServiceName string
 
 resource siteConfigLogs 'Microsoft.Web/sites/config@2022-03-01' = {
-  name: '${resourceName}/logs'
+  name: '${appServiceName}/logs'
   properties: {
     applicationLogs: { fileSystem: { level: 'Verbose' } }
     detailedErrorMessages: { enabled: true }

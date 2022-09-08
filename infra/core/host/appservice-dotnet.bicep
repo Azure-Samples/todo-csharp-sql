@@ -1,25 +1,29 @@
 param environmentName string
 param location string = resourceGroup().location
 param serviceName string
-param linuxFxVersion string = 'NODE|16-lts'
-param appCommandLine string = 'pm2 serve /home/site/wwwroot --no-daemon --spa'
-param managedIdentity bool = useKeyVault
+param linuxFxVersion string = 'DOTNETCORE|6.0'
 param scmDoBuildDuringDeployment bool = false
 param appSettings object = {}
-param useKeyVault bool = false
+param keyVaultName string = ''
+param useKeyVault bool = !(empty(keyVaultName))
+param managedIdentity bool = useKeyVault
+param applicationInsightsName string
+param appServicePlanId string
 
 module web 'appservice.bicep' = {
-  name: 'appservice-node-${serviceName}'
+  name: 'appservice-dotnet-${serviceName}'
   params: {
     environmentName: environmentName
     location: location
     linuxFxVersion: linuxFxVersion
     serviceName: serviceName
-    appCommandLine: appCommandLine
-    managedIdentity: managedIdentity
     scmDoBuildDuringDeployment: scmDoBuildDuringDeployment
     appSettings: appSettings
+    applicationInsightsName: applicationInsightsName
+    appServicePlanId: appServicePlanId
+    keyVaultName: keyVaultName
     useKeyVault: useKeyVault
+    managedIdentity: managedIdentity
   }
 }
 

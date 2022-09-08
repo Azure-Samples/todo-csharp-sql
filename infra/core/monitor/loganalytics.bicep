@@ -5,7 +5,7 @@ var resourceToken = toLower(uniqueString(subscription().id, environmentName, loc
 var tags = { 'azd-env-name': environmentName }
 var abbrs = loadJsonContent('../../abbreviations.json')
 
-resource logAnalyticsWorkspace 'Microsoft.OperationalInsights/workspaces@2021-12-01-preview' = {
+resource logAnalytics 'Microsoft.OperationalInsights/workspaces@2021-12-01-preview' = {
   name: '${abbrs.operationalInsightsWorkspaces}${resourceToken}'
   location: location
   tags: tags
@@ -20,4 +20,5 @@ resource logAnalyticsWorkspace 'Microsoft.OperationalInsights/workspaces@2021-12
   })
 }
 
-output AZURE_LOG_ANALYTICS_WORKSPACE_ID string = logAnalyticsWorkspace.id
+output AZURE_LOG_ANALYTICS_WORKSPACE_ID string = logAnalytics.id
+output AZURE_LOG_ANALYTICS_WORKSPACE_NAME string = logAnalytics.name

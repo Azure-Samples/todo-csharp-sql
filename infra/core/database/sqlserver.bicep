@@ -1,5 +1,6 @@
 param environmentName string
 param location string = resourceGroup().location
+param keyVaultName string
 param sqlConnectionStringKey string = 'AZURE-SQL-CONNECTION-STRING'
 param appUser string = 'appUser'
 param sqlAdmin string = 'sqlAdmin'
@@ -15,7 +16,7 @@ var tags = { 'azd-env-name': environmentName }
 var abbrs = loadJsonContent('../../abbreviations.json')
 
 resource keyVault 'Microsoft.KeyVault/vaults@2022-07-01' existing = {
-  name: '${abbrs.keyVaultVaults}${resourceToken}'
+  name: keyVaultName
 }
 
 resource sqlServer 'Microsoft.Sql/servers@2022-02-01-preview' = {

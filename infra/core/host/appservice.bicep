@@ -5,24 +5,23 @@ param kind string = 'app,linux'
 param linuxFxVersion string = ''
 param appCommandLine string = ''
 param scmDoBuildDuringDeployment bool = false
-param managedIdentity bool = useKeyVault
 param appSettings object = {}
-param useKeyVault bool = false
+param keyVaultName string = ''
+param useKeyVault bool = !(empty(keyVaultName))
+param managedIdentity bool = useKeyVault
+param applicationInsightsName string
+param appServicePlanId string
 
 var tags = { 'azd-env-name': environmentName }
 var resourceToken = toLower(uniqueString(subscription().id, environmentName, location))
 var abbrs = loadJsonContent('../../abbreviations.json')
 
 resource keyVault 'Microsoft.KeyVault/vaults@2022-07-01' existing = if (useKeyVault) {
-  name: '${abbrs.keyVaultVaults}${resourceToken}'
-}
-
-resource appServicePlan 'Microsoft.Web/serverfarms@2022-03-01' existing = {
-  name: '${abbrs.webServerFarms}${resourceToken}'
+  name: keyVaultName
 }
 
 resource applicationInsights 'Microsoft.Insights/components@2020-02-02' existing = {
-  name: '${abbrs.insightsComponents}${resourceToken}'
+  name: applicationInsightsName
 }
 
 resource appservice 'Microsoft.Web/sites@2022-03-01' = {
@@ -31,7 +30,7 @@ resource appservice 'Microsoft.Web/sites@2022-03-01' = {
   tags: union(tags, { 'azd-service-name': serviceName })
   kind: kind
   properties: {
-    serverFarmId: appServicePlan.id
+    serverFarmId: appServicePlanId
     siteConfig: {
       linuxFxVersion: linuxFxVersion
       alwaysOn: true
@@ -56,7 +55,7 @@ resource appservice 'Microsoft.Web/sites@2022-03-01' = {
 module apiAppSettings 'appservice-config-union.bicep' = if (!empty(appSettings)) {
   name: 'api-app-settings-${serviceName}'
   params: {
-    resourceName: appservice.name
+    appServiceName: appservice.name
     configName: 'appsettings'
     currentConfigProperties: appservice::appSettings.list().properties
     additionalConfigProperties: appSettings
@@ -66,11 +65,11 @@ module apiAppSettings 'appservice-config-union.bicep' = if (!empty(appSettings))
 module apiSiteConfigLogs 'appservice-config-logs.bicep' = {
   name: 'appservice-config-logs-${serviceName}'
   params: {
-    resourceName: appservice.name
+    appServiceName: appservice.name
   }
 }
 
-module keyVaultAccess '../keyvault/keyvault-access.bicep' = if (useKeyVault) {
+module keyVaultAccess '../security/keyvault-access.bicep' = if (useKeyVault) {
   name: 'keyvault-access-api'
   params: {
     principalId: appservice.identity.principalId

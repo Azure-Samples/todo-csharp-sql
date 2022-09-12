@@ -1,34 +1,35 @@
 param environmentName string
 param location string = resourceGroup().location
 param serviceName string
-param linuxFxVersion string = 'DOTNETCORE|6.0'
-param scmDoBuildDuringDeployment bool = false
+param linuxFxVersion string = 'NODE|16'
 param appSettings object = {}
 param keyVaultName string = ''
 param useKeyVault bool = !(empty(keyVaultName))
 param managedIdentity bool = useKeyVault
 param applicationInsightsName string
 param appServicePlanId string
+param storageAccountName string
+param functionsWorkerRuntime string = 'node'
 param allowedOrigins array = []
 
-module web 'appservice.bicep' = {
-  name: 'appservice-dotnet-${serviceName}'
+module function 'function.bicep' = {
+  name: 'function-node-resources-${serviceName}'
   params: {
     environmentName: environmentName
     location: location
-    linuxFxVersion: linuxFxVersion
     serviceName: serviceName
-    scmDoBuildDuringDeployment: scmDoBuildDuringDeployment
-    appSettings: appSettings
+    allowedOrigins: allowedOrigins
+    linuxFxVersion: linuxFxVersion
+    functionsWorkerRuntime: functionsWorkerRuntime
+    storageAccountName: storageAccountName
     applicationInsightsName: applicationInsightsName
     appServicePlanId: appServicePlanId
-    keyVaultName: keyVaultName
-    useKeyVault: useKeyVault
     managedIdentity: managedIdentity
-    allowedOrigins: allowedOrigins
+    appSettings: appSettings
+    keyVaultName: keyVaultName
   }
 }
 
-output NAME string = web.outputs.NAME
-output URI string = web.outputs.URI
-output IDENTITY_PRINCIPAL_ID string = web.outputs.IDENTITY_PRINCIPAL_ID
+output NAME string = function.outputs.NAME
+output URI string = function.outputs.URI
+output IDENTITY_PRINCIPAL_ID string = function.outputs.IDENTITY_PRINCIPAL_ID

@@ -1,7 +1,7 @@
 param environmentName string
 param location string = resourceGroup().location
 param serviceName string
-param linuxFxVersion string = 'NODE|16-lts'
+param linuxFxVersion string = 'PYTHON|3.8'
 param appCommandLine string = ''
 param scmDoBuildDuringDeployment bool = false
 param appSettings object = {}
@@ -13,7 +13,7 @@ param appServicePlanId string
 param allowedOrigins array = []
 
 module web 'appservice.bicep' = {
-  name: 'appservice-node-${serviceName}'
+  name: 'appservice-python-${serviceName}'
   params: {
     environmentName: environmentName
     location: location

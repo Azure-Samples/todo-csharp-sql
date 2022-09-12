@@ -28,6 +28,7 @@ module api './app/api.bicep' = {
     applicationInsightsName: monitoring.outputs.APPLICATIONINSIGHTS_NAME
     appServicePlanId: appServicePlan.outputs.AZURE_APP_SERVICE_PLAN_ID
     keyVaultName: keyVault.outputs.AZURE_KEY_VAULT_NAME
+    allowedOrigins: [web.outputs.URI]
   }
 }
 // The application database

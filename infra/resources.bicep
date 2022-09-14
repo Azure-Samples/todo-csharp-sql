@@ -28,7 +28,7 @@ module api './app/api.bicep' = {
     applicationInsightsName: monitoring.outputs.applicationInsightsName
     appServicePlanId: appServicePlan.outputs.appServicePlanId
     keyVaultName: keyVault.outputs.keyVaultName
-    allowedOrigins: [ web.outputs.uri ]
+    allowedOrigins: [ web.outputs.webUri ]
   }
 }
 // The application database
@@ -80,9 +80,9 @@ module monitoring './core/monitor/monitoring.bicep' = {
   }
 }
 
-output apiUri string = api.outputs.uri
+output apiUri string = api.outputs.apiUri
 output applicationInsightsConnectionString string = monitoring.outputs.applicationInsightsConnectionString
 output keyVaultEndpoint string = keyVault.outputs.keyVaultEndpoint
 output keyVaultName string = keyVault.name
 output sqlConnectionStringKey string = sqlServer.outputs.sqlConnectionStringKey
-output webUri string = web.outputs.uri
+output webUri string = web.outputs.webUri

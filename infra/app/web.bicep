@@ -7,7 +7,7 @@ param applicationInsightsName string
 param appServicePlanId string
 
 module web '../core/host/appservice-node.bicep' = {
-  name: 'appservice-node-${serviceName}'
+  name: 'web-appservice-node-${serviceName}'
   params: {
     environmentName: environmentName
     location: location

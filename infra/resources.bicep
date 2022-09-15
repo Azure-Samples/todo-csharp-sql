@@ -10,7 +10,7 @@ param appUserPassword string
 
 // The application frontend
 module web './app/web.bicep' = {
-  name: 'web-resources'
+  name: 'web'
   params: {
     environmentName: environmentName
     location: location
@@ -21,7 +21,7 @@ module web './app/web.bicep' = {
 
 // The application backend
 module api './app/api.bicep' = {
-  name: 'api-resources'
+  name: 'api'
   params: {
     environmentName: environmentName
     location: location
@@ -33,7 +33,7 @@ module api './app/api.bicep' = {
 }
 // The application database
 module sqlServer './app/db.bicep' = {
-  name: 'sql-resources'
+  name: 'sql'
   params: {
     environmentName: environmentName
     location: location
@@ -45,7 +45,7 @@ module sqlServer './app/db.bicep' = {
 
 // Configure api to use sql
 module apiSqlServerConfig './core/host/appservice-config-sqlserver.bicep' = {
-  name: 'api-sqlserver-config-resources'
+  name: 'api-sqlserver-config'
   params: {
     appServiceName: api.outputs.apiName
     sqlConnectionStringKey: sqlServer.outputs.sqlConnectionStringKey
@@ -54,7 +54,7 @@ module apiSqlServerConfig './core/host/appservice-config-sqlserver.bicep' = {
 
 // Create an App Service Plan to group applications under the same payment plan and SKU
 module appServicePlan './core/host/appserviceplan-sites.bicep' = {
-  name: 'appserviceplan-resources'
+  name: 'appserviceplan'
   params: {
     environmentName: environmentName
     location: location
@@ -63,7 +63,7 @@ module appServicePlan './core/host/appserviceplan-sites.bicep' = {
 
 // Store secrets in a keyvault
 module keyVault './core/security/keyvault.bicep' = {
-  name: 'keyvault-resources'
+  name: 'keyvault'
   params: {
     environmentName: environmentName
     location: location
@@ -73,7 +73,7 @@ module keyVault './core/security/keyvault.bicep' = {
 
 // Monitor application with Azure Monitor
 module monitoring './core/monitor/monitoring.bicep' = {
-  name: 'monitoring-resources'
+  name: 'monitoring'
   params: {
     environmentName: environmentName
     location: location

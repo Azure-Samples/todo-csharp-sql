@@ -8,7 +8,7 @@ param keyVaultName string
 param serviceName string = 'api'
 
 module api '../core/host/appservice-dotnet.bicep' = {
-  name: 'api-appservice-dotnet-${serviceName}'
+  name: '${serviceName}-appservice-dotnet-module'
   params: {
     environmentName: environmentName
     location: location

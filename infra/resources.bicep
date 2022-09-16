@@ -44,7 +44,7 @@ module sqlServer './app/db.bicep' = {
 }
 
 // Configure api to use sql
-module apiSqlServerConfig './core/host/appservice-config-sqlserver.bicep' = {
+module apiSqlServerConfig './core/host/appservice-config-db.bicep' = {
   name: 'api-sqlserver-config'
   params: {
     appServiceName: api.outputs.API_NAME

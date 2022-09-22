@@ -1,219 +1,88 @@
-param location string
+param environmentName string
+param location string = resourceGroup().location
 param principalId string = ''
-param resourceToken string
-param tags object
+
 @secure()
 param sqlAdminPassword string
+
 @secure()
 param appUserPassword string
 
-var sqlConnectionStringSecretName = 'AZURE-SQL-CONNECTION-STRING'
-var abbrs = loadJsonContent('./abbreviations.json')
-
-resource web 'Microsoft.Web/sites@2022-03-01' = {
-  name: '${abbrs.webSitesAppService}web-${resourceToken}'
-  location: location
-  tags: union(tags, { 'azd-service-name': 'web' })
-  properties: {
-    serverFarmId: appServicePlan.id
-    siteConfig: {
-      alwaysOn: true
-      ftpsState: 'FtpsOnly'
-    }
-    httpsOnly: true
-  }
-
-  resource appSettings 'config' = {
-    name: 'appsettings'
-    properties: {
-      SCM_DO_BUILD_DURING_DEPLOYMENT: 'false'
-      APPLICATIONINSIGHTS_CONNECTION_STRING: applicationInsightsResources.outputs.APPLICATIONINSIGHTS_CONNECTION_STRING
-    }
-  }
-
-  resource logs 'config' = {
-    name: 'logs'
-    properties: {
-      applicationLogs: {
-        fileSystem: {
-          level: 'Verbose'
-        }
-      }
-      detailedErrorMessages: {
-        enabled: true
-      }
-      failedRequestsTracing: {
-        enabled: true
-      }
-      httpLogs: {
-        fileSystem: {
-          enabled: true
-          retentionInDays: 1
-          retentionInMb: 35
-        }
-      }
-    }
-  }
-}
-
-resource api 'Microsoft.Web/sites@2022-03-01' = {
-  name: '${abbrs.webSitesAppService}api-${resourceToken}'
-  location: location
-  tags: union(tags, { 'azd-service-name': 'api' })
-  kind: 'app,linux'
-  properties: {
-    serverFarmId: appServicePlan.id
-    siteConfig: {
-      alwaysOn: true
-      ftpsState: 'FtpsOnly'
-    }
-    httpsOnly: true
-  }
-
-  identity: {
-    type: 'SystemAssigned'
-  }
-
-  resource appSettings 'config' = {
-    name: 'appsettings'
-    properties: {
-      AZURE_SQL_CONNECTION_STRING_KEY: sqlConnectionStringSecretName
-      APPLICATIONINSIGHTS_CONNECTION_STRING: applicationInsightsResources.outputs.APPLICATIONINSIGHTS_CONNECTION_STRING
-      AZURE_KEY_VAULT_ENDPOINT: keyVault.properties.vaultUri
-    }
-  }
-
-  resource logs 'config' = {
-    name: 'logs'
-    properties: {
-      applicationLogs: {
-        fileSystem: {
-          level: 'Verbose'
-        }
-      }
-      detailedErrorMessages: {
-        enabled: true
-      }
-      failedRequestsTracing: {
-        enabled: true
-      }
-      httpLogs: {
-        fileSystem: {
-          enabled: true
-          retentionInDays: 1
-          retentionInMb: 35
-        }
-      }
-    }
-  }
-}
-
-resource appServicePlan 'Microsoft.Web/serverfarms@2022-03-01' = {
-  name: '${abbrs.webServerFarms}${resourceToken}'
-  location: location
-  tags: tags
-  sku: {
-    name: 'B1'
-  }
-  properties: {}
-}
-
-resource logAnalyticsWorkspace 'Microsoft.OperationalInsights/workspaces@2021-12-01-preview' = {
-  name: '${abbrs.operationalInsightsWorkspaces}${resourceToken}'
-  location: location
-  tags: tags
-  properties: any({
-    retentionInDays: 30
-    features: {
-      searchVersion: 1
-    }
-    sku: {
-      name: 'PerGB2018'
-    }
-  })
-}
-
-module applicationInsightsResources './applicationinsights.bicep' = {
-  name: 'applicationinsights-resources'
+// The application frontend
+module web './app/web.bicep' = {
+  name: 'web'
   params: {
-    resourceToken: resourceToken
+    environmentName: environmentName
     location: location
-    tags: tags
-    workspaceId: logAnalyticsWorkspace.id
+    applicationInsightsName: monitoring.outputs.applicationInsightsName
+    appServicePlanId: appServicePlan.outputs.appServicePlanId
   }
 }
 
-resource keyVault 'Microsoft.KeyVault/vaults@2021-10-01' = {
-  name: '${abbrs.keyVaultVaults}${resourceToken}'
-  location: location
-  tags: tags
-  properties: {
-  tenantId: subscription().tenantId
-  sku: {
-    family: 'A'
-    name: 'standard'
-  }
-  accessPolicies: concat([
-      {
-        objectId: api.identity.principalId
-        permissions: {
-          secrets: [
-            'get'
-            'list'
-          ]
-        }
-        tenantId: subscription().tenantId
-      }
-    ], !empty(principalId) ? [
-      {
-        objectId: principalId
-        permissions: {
-          secrets: [
-            'get'
-            'list'
-          ]
-        }
-        tenantId: subscription().tenantId
-      }
-    ] : [])
-  }
-
-  resource sqlAdminPasswordSecret 'secrets' = {
-    name: 'sqlAdminPassword'
-    properties: {
-      value: sqlAdminPassword
-    }
-  }
-
-  resource appUserPasswordSecret 'secrets' = {
-    name: 'appUserPassword'
-    properties: {
-      value: appUserPassword
-    }
-  }
-
-  resource sqlAzureConnectionStringSercret 'secrets' = {
-    name: sqlConnectionStringSecretName
-    properties: {
-      value: '${db.outputs.AZURE_SQL_CONNECTION_STRING}; Password=${appUserPassword}'
-    }
-  }
-}
-
-module db './db.bicep' = {
-  name: 'db-${resourceToken}'
+// The application backend
+module api './app/api.bicep' = {
+  name: 'api'
   params: {
+    environmentName: environmentName
     location: location
-    resourceToken: resourceToken
-    tags: tags
+    applicationInsightsName: monitoring.outputs.applicationInsightsName
+    appServicePlanId: appServicePlan.outputs.appServicePlanId
+    keyVaultName: keyVault.outputs.keyVaultName
+    allowedOrigins: [ web.outputs.WEB_URI ]
+  }
+}
+// The application database
+module sqlServer './app/db.bicep' = {
+  name: 'sql'
+  params: {
+    environmentName: environmentName
+    location: location
     sqlAdminPassword: sqlAdminPassword
     appUserPassword: appUserPassword
+    keyVaultName: keyVault.outputs.keyVaultName
   }
 }
 
-output AZURE_KEY_VAULT_ENDPOINT string = keyVault.properties.vaultUri
-output APPLICATIONINSIGHTS_CONNECTION_STRING string = applicationInsightsResources.outputs.APPLICATIONINSIGHTS_CONNECTION_STRING
-output WEB_URI string = 'https://${web.properties.defaultHostName}'
-output API_URI string = 'https://${api.properties.defaultHostName}'
-output AZURE_SQL_CONNECTION_STRING_KEY string = sqlConnectionStringSecretName
-output KEYVAULT_NAME string = keyVault.name
+// Configure api to use sql
+module apiSqlServerConfig './core/host/appservice-config-sqlserver.bicep' = {
+  name: 'api-sqlserver-config'
+  params: {
+    appServiceName: api.outputs.API_NAME
+    sqlConnectionStringKey: sqlServer.outputs.sqlConnectionStringKey
+  }
+}
+
+// Create an App Service Plan to group applications under the same payment plan and SKU
+module appServicePlan './core/host/appserviceplan-sites.bicep' = {
+  name: 'appserviceplan'
+  params: {
+    environmentName: environmentName
+    location: location
+  }
+}
+
+// Store secrets in a keyvault
+module keyVault './core/security/keyvault.bicep' = {
+  name: 'keyvault'
+  params: {
+    environmentName: environmentName
+    location: location
+    principalId: principalId
+  }
+}
+
+// Monitor application with Azure Monitor
+module monitoring './core/monitor/monitoring.bicep' = {
+  name: 'monitoring'
+  params: {
+    environmentName: environmentName
+    location: location
+  }
+}
+
+output API_URI string = api.outputs.API_URI
+output APPLICATIONINSIGHTS_CONNECTION_STRING string = monitoring.outputs.applicationInsightsConnectionString
+output AZURE_KEY_VAULT_ENDPOINT string = keyVault.outputs.keyVaultEndpoint
+output AZURE_KEY_VAULT_NAME string = keyVault.name
+output AZURE_SQL_CONNECTION_STRING_KEY string = sqlServer.outputs.sqlConnectionStringKey
+output WEB_URI string = web.outputs.WEB_URI

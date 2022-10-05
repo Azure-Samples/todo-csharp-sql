@@ -7,6 +7,7 @@ param applicationInsightsName string = ''
 param appServicePlanId string
 param appSettings object = {}
 param clientAffinityEnabled bool = false
+param enableOryxBuild bool = false
 param functionAppScaleLimit int = 200
 param functionsExtensionVersion string = '~4'
 param functionsWorkerRuntime string
@@ -20,7 +21,7 @@ param scmDoBuildDuringDeployment bool = true
 param serviceName string
 param storageAccountName string
 param use32BitWorkerProcess bool = false
-param enableOryxBuild bool = false
+
 
 module functions 'appservice.bicep' = {
   name: '${serviceName}-functions'

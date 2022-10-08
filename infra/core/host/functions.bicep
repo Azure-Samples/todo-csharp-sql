@@ -7,7 +7,7 @@ param applicationInsightsName string = ''
 param appServicePlanId string
 param appSettings object = {}
 param clientAffinityEnabled bool = false
-param enableOryxBuild bool = false
+param enableOryxBuild bool = true
 param functionAppScaleLimit int = 200
 param functionsExtensionVersion string = '~4'
 param functionsWorkerRuntime string

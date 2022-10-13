@@ -44,7 +44,7 @@ module sqlServer './app/db.bicep' = {
 }
 
 // Configure api to use sql
-module apiSqlServerConfig './core/host/appservice-config-sqlserver.bicep' = {
+module apiSqlServerConfig './core/host/appservice/config/appservice-config-sqlserver.bicep' = {
   name: 'api-sqlserver-config'
   params: {
     appServiceName: api.outputs.API_NAME
@@ -53,7 +53,7 @@ module apiSqlServerConfig './core/host/appservice-config-sqlserver.bicep' = {
 }
 
 // Create an App Service Plan to group applications under the same payment plan and SKU
-module appServicePlan './core/host/appserviceplan.bicep' = {
+module appServicePlan './core/host/appservice/appserviceplan.bicep' = {
   name: 'appserviceplan'
   params: {
     environmentName: environmentName

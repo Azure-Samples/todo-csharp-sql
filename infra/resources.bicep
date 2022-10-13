@@ -31,6 +31,18 @@ module api './app/api.bicep' = {
     allowedOrigins: [ web.outputs.WEB_URI ]
   }
 }
+
+// Give the API access to KeyVault
+module apiKeyVaultAccess './core/security/keyvault-access.bicep' = {
+  name: 'api-keyvault-access'
+  params: {
+    environmentName: environmentName
+    location: location
+    keyVaultName: keyVault.outputs.keyVaultName
+    principalId: api.outputs.API_IDENTITY_PRINCIPAL_ID
+  }
+}
+
 // The application database
 module sqlServer './app/db.bicep' = {
   name: 'sql'

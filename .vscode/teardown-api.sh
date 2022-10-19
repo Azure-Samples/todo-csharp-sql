@@ -6,11 +6,11 @@ set -e
 set -u
 
 say_error() {
-    printf "setup-api: ERROR: %b\n" "$1" >&2
+    printf "teardown-api: ERROR: %b\n" "$1" >&2
 }
 
 say() {
-    printf "setup-api: %b\n" "$1"
+    printf "teardown-api: %b\n" "$1"
 }
 
 function getEnvFile() {
@@ -28,16 +28,10 @@ function getEnvFile() {
 envFile="$(getEnvFile)"
 debugEnvFile="$envFile.debug"
 
-if [ -f "$debugEnvFile" ]; then
-    say "Existing debug .env file, no action necessary"
-    exit 0
-fi
-
-if [ ! -f "$envFile" ]; then 
-    say_error "Could not locate .env file: $envFile"
-    say_error "Try 'azd env refresh' if resources are already deployed or 'azd provision'"
+if [ ! -f "$debugEnvFile" ]; then
+    say_error "Could not locate debug .env file: $debugEnvFile"
     exit 1
 fi
 
-say "Could not locate debug .env file ($debugEnvFile). Using default env file"
-cp "$envFile" "$debugEnvFile" 
+say "Removing debug .env file: $debugEnvFile"
+rm "$debugEnvFile" 

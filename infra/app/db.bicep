@@ -16,7 +16,7 @@ module sqlServer '../core/database/sqlserver/sqlserver.bicep' = {
     name: name
     location: location
     tags: tags
-    dbName: databaseName
+    databaseName: databaseName
     keyVaultName: keyVaultName
     sqlAdminPassword: sqlAdminPassword
     appUserPassword: appUserPassword

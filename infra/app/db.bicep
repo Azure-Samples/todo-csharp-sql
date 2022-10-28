@@ -16,7 +16,7 @@ module sqlServer '../core/database/sqlserver/sqlserver.bicep' = {
     name: name
     location: location
     tags: tags
-    databaseName: databaseName
+    databaseName: !empty(databaseName) ? databaseName : 'ToDo'
     keyVaultName: keyVaultName
     sqlAdminPassword: sqlAdminPassword
     appUserPassword: appUserPassword

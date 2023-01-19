@@ -1,6 +1,6 @@
 param name string
 
-@description('Resouce name to uniquely dentify this API within the API Management service instance')
+@description('Resource name to uniquely identify this API within the API Management service instance')
 @minLength(1)
 param apiName string
 
@@ -22,6 +22,9 @@ param webFrontendUrl string
 
 @description('Absolute URL of the backend service implementing this API.')
 param apiBackendUrl string
+
+@description('Resource name for backend Web or Function App')
+param apiAppName string = ''
 
 var apiPolicyContent = replace(loadTextContent('./apim-api-policy.xml'), '{origin}', webFrontendUrl)
 
@@ -93,6 +96,24 @@ resource apiDiagnostics 'Microsoft.ApiManagement/service/apis/diagnostics@2021-1
 
 resource apimService 'Microsoft.ApiManagement/service@2021-08-01' existing = {
   name: name
+}
+
+resource apiApp 'Microsoft.Web/sites@2022-03-01' existing = if (!empty(apiAppName)) {
+  name: apiAppName
+}
+
+resource apiAppProperties 'Microsoft.Web/sites/config@2022-03-01' = if (!empty(apiAppName)) {
+  name: 'web'
+  kind: 'string'
+  parent: apiApp
+  properties: {
+      apiManagementConfig: {
+        id: '${apimService.id}/apis/${apiName}'
+      }
+  }
+  dependsOn: [
+    apimService
+  ]
 }
 
 resource apimLogger 'Microsoft.ApiManagement/service/loggers@2021-12-01-preview' existing = {

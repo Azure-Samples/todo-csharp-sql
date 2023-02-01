@@ -76,13 +76,10 @@ module api './app/api.bicep' = {
     appServicePlanId: appServicePlan.outputs.id
     keyVaultName: keyVault.outputs.name
     allowedOrigins: [ web.outputs.SERVICE_WEB_URI ]
-    appSettings: {
-      AZURE_SQL_CONNECTION_STRING_KEY: sqlServer.outputs.connectionStringKey
-    }
     targetResourceId: '${sqlServer.outputs.id}/databases/${sqlServer.outputs.databaseName}'
     appUser: appUser
     appUserPassword: appUserPassword
-    connectionStringKey: sqlServer.outputs.connectionStringKey
+    connectionStringKey: 'AZURE-SQL-CONNECTION-STRING'
   }
 }
 
@@ -167,8 +164,6 @@ module apimApi './app/apim-api.bicep' = if (useAPIM) {
   }
 }
 
-// Data outputs
-output AZURE_SQL_CONNECTION_STRING_KEY string = sqlServer.outputs.connectionStringKey
 
 // App outputs
 output APPLICATIONINSIGHTS_CONNECTION_STRING string = monitoring.outputs.applicationInsightsConnectionString

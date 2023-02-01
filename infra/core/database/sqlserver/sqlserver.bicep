@@ -6,7 +6,6 @@ param appUser string = 'appUser'
 param databaseName string
 param keyVaultName string
 param sqlAdmin string = 'sqlAdmin'
-param connectionStringKey string = 'AZURE-SQL-CONNECTION-STRING'
 
 @secure()
 param sqlAdminPassword string
@@ -116,6 +115,5 @@ resource keyVault 'Microsoft.KeyVault/vaults@2022-07-01' existing = {
   name: keyVaultName
 }
 
-output connectionStringKey string = connectionStringKey
 output databaseName string = sqlServer::database.name
 output id string = sqlServer.id

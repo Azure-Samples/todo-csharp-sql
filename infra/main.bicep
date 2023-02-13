@@ -24,6 +24,7 @@ param sqlServerName string = ''
 param sqlDatabaseName string = ''
 param webServiceName string = ''
 param apimServiceName string = ''
+param appUser string = 'appUser'
 
 @description('Flag to use Azure API Management to mediate the calls between the Web frontend and the backend API')
 param useAPIM bool = false
@@ -75,19 +76,10 @@ module api './app/api.bicep' = {
     appServicePlanId: appServicePlan.outputs.id
     keyVaultName: keyVault.outputs.name
     allowedOrigins: [ web.outputs.SERVICE_WEB_URI ]
-    appSettings: {
-      AZURE_SQL_CONNECTION_STRING_KEY: sqlServer.outputs.connectionStringKey
-    }
-  }
-}
-
-// Give the API access to KeyVault
-module apiKeyVaultAccess './core/security/keyvault-access.bicep' = {
-  name: 'api-keyvault-access'
-  scope: rg
-  params: {
-    keyVaultName: keyVault.outputs.name
-    principalId: api.outputs.SERVICE_API_IDENTITY_PRINCIPAL_ID
+    targetResourceId: '${sqlServer.outputs.id}/databases/${sqlServer.outputs.databaseName}'
+    appUser: appUser
+    appUserPassword: appUserPassword
+    connectionStringKey: 'AZURE-SQL-CONNECTION-STRING'
   }
 }
 
@@ -173,8 +165,6 @@ module apimApi './app/apim-api.bicep' = if (useAPIM) {
   }
 }
 
-// Data outputs
-output AZURE_SQL_CONNECTION_STRING_KEY string = sqlServer.outputs.connectionStringKey
 
 // App outputs
 output APPLICATIONINSIGHTS_CONNECTION_STRING string = monitoring.outputs.applicationInsightsConnectionString

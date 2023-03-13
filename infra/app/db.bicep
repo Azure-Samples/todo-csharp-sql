@@ -29,3 +29,4 @@ module sqlServer '../core/database/sqlserver/sqlserver.bicep' = {
 
 output connectionStringKey string = sqlServer.outputs.connectionStringKey
 output databaseName string = sqlServer.outputs.databaseName
+output id string = sqlServer.outputs.id

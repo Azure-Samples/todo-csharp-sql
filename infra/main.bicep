@@ -76,10 +76,6 @@ module api './app/api.bicep' = {
     appServicePlanId: appServicePlan.outputs.id
     keyVaultName: keyVault.outputs.name
     allowedOrigins: [ web.outputs.SERVICE_WEB_URI ]
-    targetResourceId: '${sqlServer.outputs.id}/databases/${sqlServer.outputs.databaseName}'
-    appUser: appUser
-    appUserPassword: appUserPassword
-    connectionStringKey: 'AZURE-SQL-CONNECTION-STRING'
   }
 }
 
@@ -124,6 +120,33 @@ module keyVault './core/security/keyvault.bicep' = {
   }
 }
 
+// creation connections
+// 1. if !empty(keyVaultName), create connection to keyvault so that db credentials could be saved into keyvault, 
+// and app service could retrieve secrets from keyvault
+// 2. create connection to target database
+module connections './app/connection.bicep' = {
+  name: 'conn${resourceToken}'
+  scope: rg
+  //scope: apiWebApp
+  //scope: api.outputs.SERVICE_API_NAME
+  params: {
+    authType: 'secret'
+    //appResourceId: api.outputs.api.id
+    targetResourceId: '${sqlServer.outputs.id}/databases/${sqlServer.outputs.databaseName}'
+    runtimeName: 'dotnet'
+    dbUserName: appUser
+    dbUserPassword: appUserPassword
+    keyVaultName: keyVault.outputs.name
+    webAppName: api.outputs.SERVICE_API_NAME
+    connectionStringKey: 'AZURE-SQL-CONNECTION-STRING'
+  }
+}
+
+// resource apiWebApp 'Microsoft.Web/sites@2022-03-01' existing = {
+//   name: api.outputs.SERVICE_API_NAME
+//   scope: rg
+// }
+
 // Monitor application with Azure Monitor
 module monitoring './core/monitor/monitoring.bicep' = {
   name: 'monitoring'
@@ -164,6 +187,8 @@ module apimApi './app/apim-api.bicep' = if (useAPIM) {
   }
 }
 
+// Data outputs
+output AZURE_SQL_CONNECTION_STRING_KEY string = sqlServer.outputs.connectionStringKey
 
 // App outputs
 output APPLICATIONINSIGHTS_CONNECTION_STRING string = monitoring.outputs.applicationInsightsConnectionString

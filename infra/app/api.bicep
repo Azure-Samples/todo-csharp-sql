@@ -10,13 +10,6 @@ param appSettings object = {}
 param keyVaultName string
 param serviceName string = 'api'
 
-// Target DB properties
-param connectionStringKey string = ''
-param targetResourceId string = ''
-param appUser string = ''
-@secure()
-param appUserPassword string
-
 module api '../core/host/appservice.bicep' = {
   name: '${name}-app-module'
   params: {
@@ -32,10 +25,6 @@ module api '../core/host/appservice.bicep' = {
     runtimeName: 'dotnetcore'
     runtimeVersion: '6.0'
     scmDoBuildDuringDeployment: false
-    targetResourceId: targetResourceId
-    appUser: appUser
-    appUserPassword: appUserPassword
-    connectionStringKey: connectionStringKey
   }
 }
 

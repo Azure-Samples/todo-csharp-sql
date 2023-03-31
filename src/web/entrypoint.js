@@ -5,7 +5,7 @@ const fs = require("fs");
 const os = require("os");
 
 
-let envFilePath = ""
+let envFilePath = ".env"
 let configRoot = "ENV_CONFIG"
 let outputFile = "./public/env-config.js"
 
@@ -25,10 +25,9 @@ for (let i = 2; i < process.argv.length; i++) {
     }
 }
 
-if (envFilePath && fs.existsSync(envFilePath)) {
+if (fs.existsSync(envFilePath)) {
     console.log(`Loading environment file from '${envFilePath}'`)
 
-    // loads variables to process.env
     dotenv.config({
         path: envFilePath
     })    

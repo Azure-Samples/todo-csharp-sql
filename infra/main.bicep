@@ -53,9 +53,9 @@ resource rg 'Microsoft.Resources/resourceGroups@2021-04-01' = {
   tags: tags
 }
 
-// The application frontend
-module web './app/web.bicep' = {
-  name: 'web'
+// The initial, empty application frontend
+module webInitial './app/web.bicep' = {
+  name: 'web-initial'
   scope: rg
   params: {
     name: webName
@@ -77,23 +77,27 @@ module api './app/api.bicep' = {
     applicationInsightsName: monitoring.outputs.applicationInsightsName
     appServicePlanId: appServicePlan.outputs.id
     keyVaultName: keyVault.outputs.name
-    allowedOrigins: [ web.outputs.SERVICE_WEB_URI ]
+    allowedOrigins: [ webInitial.outputs.SERVICE_WEB_URI ]
     appSettings: {
       AZURE_SQL_CONNECTION_STRING_KEY: sqlServer.outputs.connectionStringKey
     }
   }
 }
 
-// Set additional web app settings
-module webSettings './core/host/appservice-appsettings-append.bicep' = {
-  name: 'websettings'
+// The completed application frontend with app settings
+module web './app/web.bicep' = {
+  name: 'web'
   scope: rg
   params: {
     name: webName
+    location: location
+    tags: tags
+    applicationInsightsName: monitoring.outputs.applicationInsightsName
+    appServicePlanId: appServicePlan.outputs.id
     appSettings: {
-      REACT_APP_API_BASE_URL: api.outputs.SERVICE_API_URI
+      REACT_APP_API_BASE_URL: useAPIM ? apimApi.outputs.SERVICE_API_URI : api.outputs.SERVICE_API_URI
       REACT_APP_APPLICATIONINSIGHTS_CONNECTION_STRING: monitoring.outputs.applicationInsightsConnectionString
-    }
+    }    
   }
 }
 
@@ -183,7 +187,7 @@ module apimApi './app/apim-api.bicep' = if (useAPIM) {
     apiDisplayName: 'Simple Todo API'
     apiDescription: 'This is a simple Todo API'
     apiPath: 'todo'
-    webFrontendUrl: web.outputs.SERVICE_WEB_URI
+    webFrontendUrl: webInitial.outputs.SERVICE_WEB_URI
     apiBackendUrl: api.outputs.SERVICE_API_URI
     apiAppName: api.outputs.SERVICE_API_NAME
   }

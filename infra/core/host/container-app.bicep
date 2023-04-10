@@ -2,9 +2,9 @@ param name string
 param location string = resourceGroup().location
 param tags object = {}
 
-param containerAppsEnvironmentName string = ''
+param containerAppsEnvironmentName string
 param containerName string = 'main'
-param containerRegistryName string = ''
+param containerRegistryName string
 param env array = []
 param external bool = true
 param imageName string
@@ -71,6 +71,7 @@ resource containerRegistry 'Microsoft.ContainerRegistry/registries@2022-02-01-pr
   name: containerRegistryName
 }
 
+output defaultDomain string = containerAppsEnvironment.properties.defaultDomain
 output identityPrincipalId string = managedIdentity ? app.identity.principalId : ''
 output imageName string = imageName
 output name string = app.name

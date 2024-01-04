@@ -23,4 +23,4 @@ COPY --from=build /app/nginx/nginx.conf /etc/nginx/conf.d/default.conf
 
 EXPOSE 80
 
-CMD ["/bin/sh", "-c", "/bin/entrypoint.sh -o /usr/share/nginx/html/env-config.js && nginx -g \"daemon off;\""]
+CMD ["/bin/sh", "-c", "echo $REACT_APP_WEB_BASE_URL && /bin/entrypoint.sh -o /usr/share/nginx/html/env-config.js && nginx -g \"daemon off;\""]

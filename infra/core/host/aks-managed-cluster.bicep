@@ -12,7 +12,7 @@ param location string = resourceGroup().location
 param tags object = {}
 
 @description('Kubernetes Version')
-param kubernetesVersion string = '1.25.5'
+param kubernetesVersion string = '1.28.3'
 
 @description('Whether RBAC is enabled for local accounts')
 param enableRbac bool = true

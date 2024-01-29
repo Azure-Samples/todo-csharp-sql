@@ -1,0 +1,42 @@
+name: eShopLite
+services:  
+  app:
+    language: dotnet
+    project: .\eShopLite.AppHost\eShopLite.AppHost.csproj
+    host: containerapp
+bindings:
+  - name: catalogservice2db
+    sourceType: containerapp
+    sourceResource: catalogservice
+    targetType: postgresql
+    targetResource: eshoppostgresql
+    storeType: appconfig
+    storeResource: eshopappcs
+  - name: basketservice2cache
+    sourceType: containerapp
+    sourceResource: basketservice
+    targetType: redis
+    targetResource: eshopredis
+    storeType: appconfig
+    storeResource: eshopappcs
+  - name: frontend2catalog
+    sourceType: containerapp
+    sourceResource: frontend
+    targetType: containerapp
+    targetResource: catalogservice
+    storeType: appconfig
+    storeResource: eshopappcs
+  - name: frontend2basket
+    sourceType: containerapp
+    sourceResource: frontend
+    targetType: containerapp
+    targetResource: basketservice
+    storeType: appconfig
+    storeResource: eshopappcs
+  - name: catalogappdb
+    sourceType: containerapp
+    sourceResource: catalogapp
+    targetType: postgresql
+    targetResource: eshoppostgresql
+    storeType: appconfig
+    storeResource: eshopappcs

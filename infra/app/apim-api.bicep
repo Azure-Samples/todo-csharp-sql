@@ -25,7 +25,6 @@ param apiBackendUrl string
 
 @description('Resource name for backend Web App or Function App')
 param apiAppName string = ''
-param applicationInsightsName string = ''
 
 var apiPolicyContent = replace(loadTextContent('./apim-api-policy.xml'), '{origin}', webFrontendUrl)
 
@@ -113,22 +112,9 @@ resource apiAppProperties 'Microsoft.Web/sites/config@2022-03-01' = if (!empty(a
   }
 }
 
-resource apimLogger 'Microsoft.ApiManagement/service/loggers@2021-12-01-preview' = if (!empty(applicationInsightsName)) {
+resource apimLogger 'Microsoft.ApiManagement/service/loggers@2021-12-01-preview' existing = {
   name: 'app-insights-logger'
   parent: apimService
-  properties: {
-    credentials: {
-      instrumentationKey: applicationInsights.properties.InstrumentationKey
-    }
-    description: 'Logger to Azure Application Insights'
-    isBuffered: false
-    loggerType: 'applicationInsights'
-    resourceId: applicationInsights.id
-  }
-}
-
-resource applicationInsights 'Microsoft.Insights/components@2020-02-02' existing = if (!empty(applicationInsightsName)) {
-  name: applicationInsightsName
 }
 
 output SERVICE_API_URI string = '${apimService.properties.gatewayUrl}/${apiPath}'

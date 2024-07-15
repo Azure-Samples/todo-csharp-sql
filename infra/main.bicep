@@ -87,6 +87,7 @@ module api './app/api.bicep' = {
     allowedOrigins: [ web.outputs.SERVICE_WEB_URI ]
     appSettings: {
       AZURE_SQL_CONNECTION_STRING_KEY: sqlServer.outputs.connectionStringKey
+      AZURE_CLIENT_ID: managedIdentity.outputs.managedIdentityClientId
     }
     userassignedmanagedidentityId: managedIdentity.outputs.managedIdentityId  
   }

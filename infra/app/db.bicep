@@ -5,10 +5,14 @@ param tags object = {}
 param databaseName string = ''
 param keyVaultName string
 
+param apiAppName string
+param userAssignedManagedIdentityId string
+param userassignedmanagedidentityName string
+param userAssignedManagedIdentityClientId string
+
 @secure()
 param sqlAdminPassword string
-@secure()
-param appUserPassword string
+
 
 // Because databaseName is optional in main.bicep, we make sure the database name is set here.
 var defaultDatabaseName = 'Todo'
@@ -23,7 +27,10 @@ module sqlServer '../core/database/sqlserver/sqlserver.bicep' = {
     databaseName: actualDatabaseName
     keyVaultName: keyVaultName
     sqlAdminPassword: sqlAdminPassword
-    appUserPassword: appUserPassword
+    apiAppName: apiAppName
+    userassignedmanagedidentityName: userassignedmanagedidentityName
+    userAssignedManagedIdentityId: userAssignedManagedIdentityId
+    userAssignedManagedIdentityClientId: userAssignedManagedIdentityClientId
   }
 }
 

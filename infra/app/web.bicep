@@ -6,6 +6,7 @@ param appCommandLine string = 'pm2 serve /home/site/wwwroot --no-daemon --spa'
 param applicationInsightsName string = ''
 param appServicePlanId string
 
+
 module web '../core/host/appservice.bicep' = {
   name: '${name}-deployment'
   params: {

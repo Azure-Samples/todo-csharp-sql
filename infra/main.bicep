@@ -38,9 +38,6 @@ param principalId string = ''
 @description('SQL Server administrator password')
 param sqlAdminPassword string
 
-@secure()
-@description('Application user password')
-param appUserPassword string
 
 var abbrs = loadJsonContent('./abbreviations.json')
 var resourceToken = toLower(uniqueString(subscription().id, environmentName, location))
@@ -66,6 +63,16 @@ module web './app/web.bicep' = {
   }
 }
 
+module managedIdentity './core/security/managed-identity.bicep' = {
+  name: 'managed-identity'
+  scope: rg
+  params: {
+    name: '${abbrs.managedIdentityUserAssignedIdentities}${resourceToken}'
+    location: location
+    tags: tags
+  }
+}
+
 // The application backend
 module api './app/api.bicep' = {
   name: 'api'
@@ -81,6 +88,7 @@ module api './app/api.bicep' = {
     appSettings: {
       AZURE_SQL_CONNECTION_STRING_KEY: sqlServer.outputs.connectionStringKey
     }
+    userassignedmanagedidentityId: managedIdentity.outputs.managedIdentityId  
   }
 }
 
@@ -90,7 +98,7 @@ module apiKeyVaultAccess './core/security/keyvault-access.bicep' = {
   scope: rg
   params: {
     keyVaultName: keyVault.outputs.name
-    principalId: api.outputs.SERVICE_API_IDENTITY_PRINCIPAL_ID
+    principalId: managedIdentity.outputs.managedIdentityPrincipalId
   }
 }
 
@@ -103,9 +111,12 @@ module sqlServer './app/db.bicep' = {
     databaseName: sqlDatabaseName
     location: location
     tags: tags
-    sqlAdminPassword: sqlAdminPassword
-    appUserPassword: appUserPassword
+    apiAppName: managedIdentity.outputs.managedIdentityName
     keyVaultName: keyVault.outputs.name
+    sqlAdminPassword: sqlAdminPassword
+    userassignedmanagedidentityName: managedIdentity.outputs.managedIdentityName
+    userAssignedManagedIdentityId: managedIdentity.outputs.managedIdentityId
+    userAssignedManagedIdentityClientId: managedIdentity.outputs.managedIdentityClientId
   }
 }
 

@@ -37,6 +37,7 @@ param use32BitWorkerProcess bool = false
 param ftpsState string = 'FtpsOnly'
 param healthCheckPath string = ''
 param virtualNetworkSubnetId string = ''
+param userassignedmanagedidentityId string = ''
 
 resource appService 'Microsoft.Web/sites@2022-03-01' = {
   name: name
@@ -65,7 +66,11 @@ resource appService 'Microsoft.Web/sites@2022-03-01' = {
     virtualNetworkSubnetId: !empty(virtualNetworkSubnetId) ? virtualNetworkSubnetId : null
   }
 
-  identity: { type: managedIdentity ? 'SystemAssigned' : 'None' }
+  identity: { type: managedIdentity ? 'UserAssigned' : 'None'
+        userAssignedIdentities: managedIdentity ? {
+          '${userassignedmanagedidentityId}': {}
+          } : null 
+}
 
   resource basicPublishingCredentialsPoliciesFtp 'basicPublishingCredentialsPolicies' = {
     name: 'ftp'
@@ -120,6 +125,6 @@ resource applicationInsights 'Microsoft.Insights/components@2020-02-02' existing
   name: applicationInsightsName
 }
 
-output identityPrincipalId string = managedIdentity ? appService.identity.principalId : ''
+output identityPrincipalId string = managedIdentity ? userassignedmanagedidentityId : ''
 output name string = appService.name
 output uri string = 'https://${appService.properties.defaultHostName}'

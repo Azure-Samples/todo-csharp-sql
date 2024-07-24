@@ -67,7 +67,7 @@ resource sqlDeploymentScript 'Microsoft.Resources/deploymentScripts@2020-10-01' 
     }
   }
   properties: {
-    azCliVersion: '2.37.0'
+    azCliVersion: '2.52.0'
     retentionInterval: 'PT1H' // Retain the script resource for 1 hour after it ends running
     timeout: 'PT5M' // Five minutes
     cleanupPreference: 'OnSuccess'
@@ -83,6 +83,10 @@ resource sqlDeploymentScript 'Microsoft.Resources/deploymentScripts@2020-10-01' 
       {
         name: 'apiAppName'
         value: apiAppName
+      }
+      {
+        name: 'sqlManagedIdentityId'
+        value: userAssignedManagedIdentityClientId
       }
      
     ]
@@ -102,12 +106,19 @@ ALTER ROLE db_datawriter ADD MEMBER ${apiAppName}
 go
 SCRIPT_END
 
-./sqlcmd -S ${DBSERVER} -d ${DBNAME} -G -i ./initDb.sql
+./sqlcmd -S ${DBSERVER} -d ${DBNAME} -U ${sqlManagedIdentityId} -i ./initDb.sql
     '''
   }
 }
 
 
+resource sqlAdminPasswordSecret 'Microsoft.KeyVault/vaults/secrets@2022-07-01' = {
+  parent: keyVault
+  name: 'sqlAdminPassword'
+  properties: {
+    value: sqlAdminPassword
+  }
+}
 
 
 resource sqlAzureConnectionStringSercret 'Microsoft.KeyVault/vaults/secrets@2022-07-01' = {

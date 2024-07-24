@@ -63,11 +63,23 @@ module web './app/web.bicep' = {
   }
 }
 
+//user-assigned managed identity for the API app
 module managedIdentity './core/security/managed-identity.bicep' = {
   name: 'managed-identity'
   scope: rg
   params: {
     name: '${abbrs.managedIdentityUserAssignedIdentities}${resourceToken}'
+    location: location
+    tags: tags
+  }
+}
+
+//user-assigned managed identity for the SQL Admin
+module sqlAdminManagedIdentity './core/security/managed-identity.bicep' = {
+  name: 'sqlAdminManagedIdentity'
+  scope: rg
+  params: {
+    name: 'sqlAdminManagedIdentity'
     location: location
     tags: tags
   }
@@ -115,9 +127,9 @@ module sqlServer './app/db.bicep' = {
     apiAppName: managedIdentity.outputs.managedIdentityName
     keyVaultName: keyVault.outputs.name
     sqlAdminPassword: sqlAdminPassword
-    userassignedmanagedidentityName: managedIdentity.outputs.managedIdentityName
-    userAssignedManagedIdentityId: managedIdentity.outputs.managedIdentityId
-    userAssignedManagedIdentityClientId: managedIdentity.outputs.managedIdentityClientId
+    userassignedmanagedidentityName: sqlAdminManagedIdentity.outputs.managedIdentityName
+    userAssignedManagedIdentityId: sqlAdminManagedIdentity.outputs.managedIdentityId
+    userAssignedManagedIdentityClientId: sqlAdminManagedIdentity.outputs.managedIdentityClientId
   }
 }
 

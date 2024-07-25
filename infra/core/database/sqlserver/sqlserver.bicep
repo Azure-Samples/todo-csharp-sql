@@ -88,7 +88,7 @@ resource sqlDeploymentScript 'Microsoft.Resources/deploymentScripts@2020-10-01' 
         name: 'sqlManagedIdentityId'
         value: userAssignedManagedIdentityClientId
       }
-     
+
     ]
 
     scriptContent: '''
@@ -100,13 +100,13 @@ drop user if exists ${apiAppName}
 go
 CREATE USER ${apiAppName} FROM EXTERNAL PROVIDER
 go
-ALTER ROLE db_datareader ADD MEMBER ${apiAppName} 
+ALTER ROLE db_datareader ADD MEMBER ${apiAppName}
 go
-ALTER ROLE db_datawriter ADD MEMBER ${apiAppName} 
+ALTER ROLE db_datawriter ADD MEMBER ${apiAppName}
 go
 SCRIPT_END
 
-./sqlcmd -S ${DBSERVER} -d ${DBNAME} -U ${sqlManagedIdentityId} -i ./initDb.sql
+./sqlcmd -S ${DBSERVER} -d ${DBNAME} --authentication-method ActiveDirectoryManagedIdentity -U ${sqlManagedIdentityId} -i ./initDb.sql
     '''
   }
 }

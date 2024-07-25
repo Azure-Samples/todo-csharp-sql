@@ -5,7 +5,8 @@
 		<Nullable>enable</Nullable>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<InvariantGlobalization>false</InvariantGlobalization>
-	</PropertyGroup>
+	  <UserSecretsId>ddcb5b27-2d50-4a17-8b02-d567ac583587</UserSecretsId>
+  </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Azure.Identity" Version="1.12.0" />

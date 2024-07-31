@@ -21,12 +21,21 @@ resource sqlServer 'Microsoft.Sql/servers@2022-05-01-preview' = {
   name: name
   location: location
   tags: tags
+  identity: {
+    type: 'UserAssigned'
+    userAssignedIdentities: {
+      '${userAssignedManagedIdentityId}': {   
+      }
+    }
+
+  }
   properties: {
     version: '12.0'
     minimalTlsVersion: '1.2'
     publicNetworkAccess: 'Enabled'
     administratorLogin: sqlAdmin
     administratorLoginPassword: sqlAdminPassword
+    primaryUserAssignedIdentityId: userAssignedManagedIdentityId
     administrators: {
       administratorType: 'ActiveDirectory'
       azureADOnlyAuthentication: true

@@ -111,6 +111,9 @@ SCRIPT_END
   }
 }
 
+resource keyVault 'Microsoft.KeyVault/vaults@2022-07-01' existing = {
+  name: keyVaultName
+}
 
 resource sqlAdminPasswordSecret 'Microsoft.KeyVault/vaults/secrets@2022-07-01' = {
   parent: keyVault
@@ -120,7 +123,7 @@ resource sqlAdminPasswordSecret 'Microsoft.KeyVault/vaults/secrets@2022-07-01' =
   }
 }
 
-
+var connectionString = 'Server=${sqlServer.properties.fullyQualifiedDomainName}; Authentication=Active Directory Default; Initial Catalog=${sqlServer::database.name};'
 resource sqlAzureConnectionStringSercret 'Microsoft.KeyVault/vaults/secrets@2022-07-01' = {
   parent: keyVault
   name: connectionStringKey
@@ -129,10 +132,5 @@ resource sqlAzureConnectionStringSercret 'Microsoft.KeyVault/vaults/secrets@2022
   }
 }
 
-resource keyVault 'Microsoft.KeyVault/vaults@2022-07-01' existing = {
-  name: keyVaultName
-}
-
-var connectionString = 'Server=${sqlServer.properties.fullyQualifiedDomainName}; Authentication=Active Directory Default; Initial Catalog=${sqlServer::database.name};'
 output connectionStringKey string = connectionStringKey
 output databaseName string = sqlServer::database.name

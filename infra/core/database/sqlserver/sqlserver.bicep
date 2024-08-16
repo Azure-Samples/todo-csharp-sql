@@ -21,21 +21,20 @@ resource sqlServer 'Microsoft.Sql/servers@2022-05-01-preview' = {
   name: name
   location: location
   tags: tags
-  identity: {
+  identity: !empty(userAssignedManagedIdentityId) ? {
     type: 'UserAssigned'
     userAssignedIdentities: {
-      '${userAssignedManagedIdentityId}': {   
+      '${userAssignedManagedIdentityId}': {
       }
     }
-
-  }
+  } : null
   properties: {
     version: '12.0'
     minimalTlsVersion: '1.2'
     publicNetworkAccess: 'Enabled'
     administratorLogin: sqlAdmin
     administratorLoginPassword: sqlAdminPassword
-    primaryUserAssignedIdentityId: userAssignedManagedIdentityId
+    primaryUserAssignedIdentityId: !empty(userAssignedManagedIdentityId) ? userAssignedManagedIdentityId: null
     administrators: {
       administratorType: 'ActiveDirectory'
       azureADOnlyAuthentication: true
@@ -143,3 +142,5 @@ resource sqlAzureConnectionStringSercret 'Microsoft.KeyVault/vaults/secrets@2022
 
 output connectionStringKey string = connectionStringKey
 output databaseName string = sqlServer::database.name
+output sqlServerFQDN string = sqlServer.properties.fullyQualifiedDomainName
+

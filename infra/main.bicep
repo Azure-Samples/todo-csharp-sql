@@ -34,14 +34,25 @@ param apimSku string = 'Consumption'
 @description('Id of the user or app to assign application roles')
 param principalId string = ''
 
+@description('ObjectId/ClientId of the azd executer, populated from pre-hook script')
+param clientID string = ''
+
 @secure()
 @description('SQL Server administrator password')
 param sqlAdminPassword string
 
+@description('Whether the deployment is running on GitHub Actions')
+param runningOnGh string = ''
+
+@description('Whether the deployment is running on Azure DevOps Pipeline')
+param runningOnAdo string = ''
 
 var abbrs = loadJsonContent('./abbreviations.json')
 var resourceToken = toLower(uniqueString(subscription().id, environmentName, location))
 var tags = { 'azd-env-name': environmentName }
+
+// USER ROLES
+var principalType = empty(runningOnGh) && empty(runningOnAdo) ? 'User' : 'ServicePrincipal'
 
 // Organize resources in a resource group
 resource rg 'Microsoft.Resources/resourceGroups@2021-04-01' = {
@@ -51,7 +62,7 @@ resource rg 'Microsoft.Resources/resourceGroups@2021-04-01' = {
 }
 
 //user-assigned managed identity for the API app
-module managedIdentity './core/security/managed-identity.bicep' = {
+module apiAppManagedIdentity './core/security/managed-identity.bicep' = {
   name: 'managed-identity'
   scope: rg
   params: {
@@ -62,15 +73,15 @@ module managedIdentity './core/security/managed-identity.bicep' = {
 }
 
 //user-assigned managed identity for the SQL Admin
-module sqlAdminManagedIdentity './core/security/managed-identity.bicep' = {
-  name: 'sqlAdminManagedIdentity'
-  scope: rg
-  params: {
-    name: 'sqlAdminManagedIdentity'
-    location: location
-    tags: tags
-  }
-}
+// module sqlAdminManagedIdentity './core/security/managed-identity.bicep' = {
+//   name: 'sqlAdminManagedIdentity'
+//   scope: rg
+//   params: {
+//     name: 'sqlAdminManagedIdentity'
+//     location: location
+//     tags: tags
+//   }
+// }
 
 // Store secrets in a keyvault
 module keyVault './core/security/keyvault.bicep' = {
@@ -90,7 +101,7 @@ module apiKeyVaultAccess './core/security/keyvault-access.bicep' = {
   scope: rg
   params: {
     keyVaultName: keyVault.outputs.name
-    principalId: managedIdentity.outputs.managedIdentityPrincipalId
+    principalId: apiAppManagedIdentity.outputs.managedIdentityPrincipalId
   }
 }
 
@@ -130,12 +141,12 @@ module sqlServer './app/db.bicep' = {
     databaseName: sqlDatabaseName
     location: location
     tags: tags
-    apiAppName: managedIdentity.outputs.managedIdentityName
+    apiAppName: apiAppManagedIdentity.outputs.managedIdentityName
     keyVaultName: keyVault.outputs.name
     sqlAdminPassword: sqlAdminPassword
-    userassignedmanagedidentityName: sqlAdminManagedIdentity.outputs.managedIdentityName
-    userAssignedManagedIdentityId: sqlAdminManagedIdentity.outputs.managedIdentityId
-    userAssignedManagedIdentityClientId: sqlAdminManagedIdentity.outputs.managedIdentityClientId
+    userassignedmanagedidentityName: principalId
+    userAssignedManagedIdentityClientId: clientID //will be populated from Pre provisioning hook script
+    userAssignedManagedIdentityId: principalType == 'ServicePrincipal' ? principalId : ''
   }
 }
 
@@ -166,9 +177,9 @@ module api './app/api.bicep' = {
     allowedOrigins: [ web.outputs.SERVICE_WEB_URI ]
     appSettings: {
       AZURE_SQL_CONNECTION_STRING_KEY: sqlServer.outputs.connectionStringKey
-      AZURE_CLIENT_ID: managedIdentity.outputs.managedIdentityClientId
+      AZURE_CLIENT_ID: apiAppManagedIdentity.outputs.managedIdentityClientId
     }
-    userassignedmanagedidentityId: managedIdentity.outputs.managedIdentityId
+    userassignedmanagedidentityId: apiAppManagedIdentity.outputs.managedIdentityId
   }
 }
 
@@ -214,3 +225,6 @@ output API_BASE_URL string = useAPIM ? apimApi.outputs.SERVICE_API_URI : api.out
 output REACT_APP_WEB_BASE_URL string = web.outputs.SERVICE_WEB_URI
 output USE_APIM bool = useAPIM
 output SERVICE_API_ENDPOINTS array = useAPIM ? [ apimApi.outputs.SERVICE_API_URI, api.outputs.SERVICE_API_URI ]: []
+output SQLDATABASENAME string = sqlDatabaseName
+output SQLSERVERFQDN string = sqlServer.outputs.sqlServerFQDN
+output MSIAPIAPPNAME string = apiAppManagedIdentity.outputs.managedIdentityName

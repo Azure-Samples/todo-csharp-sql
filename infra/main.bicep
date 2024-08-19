@@ -225,6 +225,6 @@ output API_BASE_URL string = useAPIM ? apimApi.outputs.SERVICE_API_URI : api.out
 output REACT_APP_WEB_BASE_URL string = web.outputs.SERVICE_WEB_URI
 output USE_APIM bool = useAPIM
 output SERVICE_API_ENDPOINTS array = useAPIM ? [ apimApi.outputs.SERVICE_API_URI, api.outputs.SERVICE_API_URI ]: []
-output SQLDATABASENAME string = sqlDatabaseName
+output SQLDATABASENAME string = sqlServer.outputs.databaseName
 output SQLSERVERFQDN string = sqlServer.outputs.sqlServerFQDN
 output MSIAPIAPPNAME string = apiAppManagedIdentity.outputs.managedIdentityName

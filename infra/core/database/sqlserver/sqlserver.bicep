@@ -21,21 +21,20 @@ resource sqlServer 'Microsoft.Sql/servers@2022-05-01-preview' = {
   name: name
   location: location
   tags: tags
-  identity: {
+  identity: !empty(userAssignedManagedIdentityId) ? {
     type: 'UserAssigned'
     userAssignedIdentities: {
-      '${userAssignedManagedIdentityId}': {   
+      '${userAssignedManagedIdentityId}': {
       }
     }
-
-  }
+  } : null
   properties: {
     version: '12.0'
     minimalTlsVersion: '1.2'
     publicNetworkAccess: 'Enabled'
     administratorLogin: sqlAdmin
     administratorLoginPassword: sqlAdminPassword
-    primaryUserAssignedIdentityId: userAssignedManagedIdentityId
+    primaryUserAssignedIdentityId: !empty(userAssignedManagedIdentityId) ? userAssignedManagedIdentityId: null
     administrators: {
       administratorType: 'ActiveDirectory'
       azureADOnlyAuthentication: true
@@ -65,60 +64,60 @@ resource sqlServer 'Microsoft.Sql/servers@2022-05-01-preview' = {
 
 
 
-resource sqlDeploymentScript 'Microsoft.Resources/deploymentScripts@2020-10-01' = {
-  name: '${name}-deployment-script'
-  location: location
-  kind: 'AzureCLI'
-  identity: {
-    type: 'UserAssigned'
-    userAssignedIdentities: {
-      '${userAssignedManagedIdentityId}': {}
-    }
-  }
-  properties: {
-    azCliVersion: '2.52.0'
-    retentionInterval: 'PT1H' // Retain the script resource for 1 hour after it ends running
-    timeout: 'PT5M' // Five minutes
-    cleanupPreference: 'OnSuccess'
-    environmentVariables: [
-      {
-        name: 'DBNAME'
-        value: databaseName
-      }
-      {
-        name: 'DBSERVER'
-        value: sqlServer.properties.fullyQualifiedDomainName
-      }
-      {
-        name: 'apiAppName'
-        value: apiAppName
-      }
-      {
-        name: 'sqlManagedIdentityId'
-        value: userAssignedManagedIdentityClientId
-      }
+// resource sqlDeploymentScript 'Microsoft.Resources/deploymentScripts@2020-10-01' = {
+//   name: '${name}-deployment-script'
+//   location: location
+//   kind: 'AzureCLI'
+//   identity: {
+//     type: 'UserAssigned'
+//     userAssignedIdentities: {
+//       '${userAssignedManagedIdentityId}': {}
+//     }
+//   }
+//   properties: {
+//     azCliVersion: '2.52.0'
+//     retentionInterval: 'PT1H' // Retain the script resource for 1 hour after it ends running
+//     timeout: 'PT5M' // Five minutes
+//     cleanupPreference: 'OnSuccess'
+//     environmentVariables: [
+//       {
+//         name: 'DBNAME'
+//         value: databaseName
+//       }
+//       {
+//         name: 'DBSERVER'
+//         value: sqlServer.properties.fullyQualifiedDomainName
+//       }
+//       {
+//         name: 'apiAppName'
+//         value: apiAppName
+//       }
+//       {
+//         name: 'sqlManagedIdentityId'
+//         value: userAssignedManagedIdentityClientId
+//       }
 
-    ]
+//     ]
 
-    scriptContent: '''
-wget https://github.com/microsoft/go-sqlcmd/releases/download/v0.8.1/sqlcmd-v0.8.1-linux-x64.tar.bz2
-tar x -f sqlcmd-v0.8.1-linux-x64.tar.bz2 -C .
+//     scriptContent: '''
+// wget https://github.com/microsoft/go-sqlcmd/releases/download/v0.8.1/sqlcmd-v0.8.1-linux-x64.tar.bz2
+// tar x -f sqlcmd-v0.8.1-linux-x64.tar.bz2 -C .
 
-cat <<SCRIPT_END > ./initDb.sql
-drop user if exists ${apiAppName}
-go
-CREATE USER ${apiAppName} FROM EXTERNAL PROVIDER
-go
-ALTER ROLE db_datareader ADD MEMBER ${apiAppName}
-go
-ALTER ROLE db_datawriter ADD MEMBER ${apiAppName}
-go
-SCRIPT_END
+// cat <<SCRIPT_END > ./initDb.sql
+// drop user if exists ${apiAppName}
+// go
+// CREATE USER ${apiAppName} FROM EXTERNAL PROVIDER
+// go
+// ALTER ROLE db_datareader ADD MEMBER ${apiAppName}
+// go
+// ALTER ROLE db_datawriter ADD MEMBER ${apiAppName}
+// go
+// SCRIPT_END
 
-./sqlcmd -S ${DBSERVER} -d ${DBNAME} --authentication-method ActiveDirectoryManagedIdentity -U ${sqlManagedIdentityId} -i ./initDb.sql
-    '''
-  }
-}
+// ./sqlcmd -S ${DBSERVER} -d ${DBNAME} --authentication-method ActiveDirectoryManagedIdentity -U ${sqlManagedIdentityId} -i ./initDb.sql
+//     '''
+//   }
+// }
 
 resource keyVault 'Microsoft.KeyVault/vaults@2022-07-01' existing = {
   name: keyVaultName
@@ -143,3 +142,5 @@ resource sqlAzureConnectionStringSercret 'Microsoft.KeyVault/vaults/secrets@2022
 
 output connectionStringKey string = connectionStringKey
 output databaseName string = sqlServer::database.name
+output sqlServerFQDN string = sqlServer.properties.fullyQualifiedDomainName
+

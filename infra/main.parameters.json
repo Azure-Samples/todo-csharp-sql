@@ -22,6 +22,15 @@
     },
     "apimSku": {
       "value": "${APIM_SKU=Consumption}"
+    },
+    "runningOnGh": {
+      "value": "${GITHUB_ACTIONS}"
+    },
+    "runningOnAdo": {
+      "value": "${TF_BUILD}"
+    },
+    "clientID": {
+      "value": "${clientID}"
     }
   }
 }

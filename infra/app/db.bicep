@@ -9,6 +9,8 @@ param apiAppName string
 param userAssignedManagedIdentityId string
 param userassignedmanagedidentityName string
 param userAssignedManagedIdentityClientId string
+@description('Flag to use Cosmos DB')
+param useCosmos bool = true
 
 @secure()
 param sqlAdminPassword string
@@ -18,7 +20,7 @@ param sqlAdminPassword string
 var defaultDatabaseName = 'Todo'
 var actualDatabaseName = !empty(databaseName) ? databaseName : defaultDatabaseName
 
-module sqlServer '../core/database/sqlserver/sqlserver.bicep' = {
+module sqlServer '../core/database/sqlserver/sqlserver.bicep' = if(!useCosmos) {
   name: 'sqlserver'
   params: {
     name: name
@@ -33,6 +35,9 @@ module sqlServer '../core/database/sqlserver/sqlserver.bicep' = {
     userAssignedManagedIdentityClientId: userAssignedManagedIdentityClientId
   }
 }
+
+
+
 
 output connectionStringKey string = sqlServer.outputs.connectionStringKey
 output databaseName string = sqlServer.outputs.databaseName

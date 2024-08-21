@@ -21,12 +21,16 @@ param keyVaultName string = ''
 param logAnalyticsName string = ''
 param resourceGroupName string = ''
 param sqlServerName string = ''
+param cosmosAccountName string = ''
 param sqlDatabaseName string = ''
 param webServiceName string = ''
 param apimServiceName string = ''
 
 @description('Flag to use Azure API Management to mediate the calls between the Web frontend and the backend API')
 param useAPIM bool = false
+
+@description('Flag to use Cosmos DB')
+param useCosmos bool = true
 
 @description('API Management SKU to use if APIM is enabled')
 param apimSku string = 'Consumption'
@@ -116,7 +120,7 @@ module apiKeyVaultAccess './core/security/keyvault-access.bicep' = {
 }
 
 // The application database
-module sqlServer './app/db.bicep' = {
+module sqlServer './app/db.bicep' = if (!useCosmos){
   name: 'sql'
   scope: rg
   params: {
@@ -130,6 +134,47 @@ module sqlServer './app/db.bicep' = {
     userassignedmanagedidentityName: sqlAdminManagedIdentity.outputs.managedIdentityName
     userAssignedManagedIdentityId: sqlAdminManagedIdentity.outputs.managedIdentityId
     userAssignedManagedIdentityClientId: sqlAdminManagedIdentity.outputs.managedIdentityClientId
+  }
+}
+
+// The application database
+module cosmos './core/database/cosmos/sql/cosmos-sql-db.bicep' = if (useCosmos){
+  name: 'cosmos'
+  scope: rg
+  params: {
+    accountName: !empty(cosmosAccountName) ? cosmosAccountName : 'cosmos-keyless-${resourceToken}'
+    databaseName: 'todo-db'
+    location: location
+    keyVaultName: keyVault.outputs.name
+    tags: tags
+    containers: [
+      {
+        name: 'todo'
+        id: 'todo'
+        partitionKey: '/id'
+      }
+    ]
+  }
+}
+
+//cosmos role
+module cosmosRoleContributor 'core/security/role.bicep' = if (useCosmos) {
+  scope: rg
+  name: 'ai-search-service-contributor'
+  params: {
+    principalId: managedIdentity.outputs.managedIdentityPrincipalId
+    roleDefinitionId: '7ca78c08-252a-4471-8644-bb5ff32d4ba0' //Search Service Contributor
+    principalType: 'ServicePrincipal'
+  }
+}
+
+module cosmosAccountRole 'core/security/role-cosmos.bicep' = if (useCosmos){
+  scope: rg
+  name: 'cosmos-account-role'
+  params: {
+    principalId: managedIdentity.outputs.managedIdentityPrincipalId
+    databaseAccountId: cosmos.outputs.accountId
+    databaseAccountName: cosmos.outputs.accountName
   }
 }
 
@@ -213,4 +258,5 @@ output AZURE_TENANT_ID string = tenant().tenantId
 output API_BASE_URL string = useAPIM ? apimApi.outputs.SERVICE_API_URI : api.outputs.SERVICE_API_URI
 output REACT_APP_WEB_BASE_URL string = web.outputs.SERVICE_WEB_URI
 output USE_APIM bool = useAPIM
+output USE_COSMOS bool = useCosmos
 output SERVICE_API_ENDPOINTS array = useAPIM ? [ apimApi.outputs.SERVICE_API_URI, api.outputs.SERVICE_API_URI ]: []

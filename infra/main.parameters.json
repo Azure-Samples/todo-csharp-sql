@@ -22,6 +22,9 @@
     },
     "apimSku": {
       "value": "${APIM_SKU=Consumption}"
+    },
+    "useCosmos": {
+      "value": "${USE_COSMOS=false}"
     }
   }
 }

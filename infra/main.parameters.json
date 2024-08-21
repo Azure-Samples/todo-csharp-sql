@@ -25,6 +25,15 @@
     },
     "useCosmos": {
       "value": "${USE_COSMOS=false}"
+    },  
+    "runningOnGh": {
+      "value": "${GITHUB_ACTIONS}"
+    },
+    "runningOnAdo": {
+      "value": "${TF_BUILD}"
+    },
+    "clientID": {
+      "value": "${clientID}"
     }
   }
 }

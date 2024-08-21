@@ -15,7 +15,6 @@ param useCosmos bool = true
 @secure()
 param sqlAdminPassword string
 
-
 // Because databaseName is optional in main.bicep, we make sure the database name is set here.
 var defaultDatabaseName = 'Todo'
 var actualDatabaseName = !empty(databaseName) ? databaseName : defaultDatabaseName
@@ -41,3 +40,4 @@ module sqlServer '../core/database/sqlserver/sqlserver.bicep' = if(!useCosmos) {
 
 output connectionStringKey string = sqlServer.outputs.connectionStringKey
 output databaseName string = sqlServer.outputs.databaseName
+output sqlServerFQDN string = sqlServer.outputs.sqlServerFQDN

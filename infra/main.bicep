@@ -38,14 +38,25 @@ param apimSku string = 'Consumption'
 @description('Id of the user or app to assign application roles')
 param principalId string = ''
 
+@description('ObjectId/ClientId of the azd executer, populated from pre-hook script')
+param clientID string = ''
+
 @secure()
 @description('SQL Server administrator password')
 param sqlAdminPassword string
 
+@description('Whether the deployment is running on GitHub Actions')
+param runningOnGh string = ''
+
+@description('Whether the deployment is running on Azure DevOps Pipeline')
+param runningOnAdo string = ''
 
 var abbrs = loadJsonContent('./abbreviations.json')
 var resourceToken = toLower(uniqueString(subscription().id, environmentName, location))
 var tags = { 'azd-env-name': environmentName }
+
+// USER ROLES
+var principalType = empty(runningOnGh) && empty(runningOnAdo) ? 'User' : 'ServicePrincipal'
 
 // Organize resources in a resource group
 resource rg 'Microsoft.Resources/resourceGroups@2021-04-01' = {
@@ -54,21 +65,8 @@ resource rg 'Microsoft.Resources/resourceGroups@2021-04-01' = {
   tags: tags
 }
 
-// The application frontend
-module web './app/web.bicep' = {
-  name: 'web'
-  scope: rg
-  params: {
-    name: !empty(webServiceName) ? webServiceName : '${abbrs.webSitesAppService}web-${resourceToken}'
-    location: location
-    tags: tags
-    applicationInsightsName: monitoring.outputs.applicationInsightsName
-    appServicePlanId: appServicePlan.outputs.id
-  }
-}
-
 //user-assigned managed identity for the API app
-module managedIdentity './core/security/managed-identity.bicep' = {
+module apiAppManagedIdentity './core/security/managed-identity.bicep' = {
   name: 'managed-identity'
   scope: rg
   params: {
@@ -79,33 +77,25 @@ module managedIdentity './core/security/managed-identity.bicep' = {
 }
 
 //user-assigned managed identity for the SQL Admin
-module sqlAdminManagedIdentity './core/security/managed-identity.bicep' = {
-  name: 'sqlAdminManagedIdentity'
-  scope: rg
-  params: {
-    name: 'sqlAdminManagedIdentity'
-    location: location
-    tags: tags
-  }
-}
+// module sqlAdminManagedIdentity './core/security/managed-identity.bicep' = {
+//   name: 'sqlAdminManagedIdentity'
+//   scope: rg
+//   params: {
+//     name: 'sqlAdminManagedIdentity'
+//     location: location
+//     tags: tags
+//   }
+// }
 
-// The application backend
-module api './app/api.bicep' = {
-  name: 'api'
+// Store secrets in a keyvault
+module keyVault './core/security/keyvault.bicep' = {
+  name: 'keyvault'
   scope: rg
   params: {
-    name: !empty(apiServiceName) ? apiServiceName : '${abbrs.webSitesAppService}api-${resourceToken}'
+    name: !empty(keyVaultName) ? keyVaultName : '${abbrs.keyVaultVaults}${resourceToken}'
     location: location
     tags: tags
-    applicationInsightsName: monitoring.outputs.applicationInsightsName
-    appServicePlanId: appServicePlan.outputs.id
-    keyVaultName: keyVault.outputs.name
-    allowedOrigins: [ web.outputs.SERVICE_WEB_URI ]
-    appSettings: {
-      AZURE_SQL_CONNECTION_STRING_KEY: sqlServer.outputs.connectionStringKey
-      AZURE_CLIENT_ID: managedIdentity.outputs.managedIdentityClientId
-    }
-    userassignedmanagedidentityId: managedIdentity.outputs.managedIdentityId  
+    principalId: principalId
   }
 }
 
@@ -115,12 +105,39 @@ module apiKeyVaultAccess './core/security/keyvault-access.bicep' = {
   scope: rg
   params: {
     keyVaultName: keyVault.outputs.name
-    principalId: managedIdentity.outputs.managedIdentityPrincipalId
+    principalId: apiAppManagedIdentity.outputs.managedIdentityPrincipalId
+  }
+}
+
+
+module monitoring './core/monitor/monitoring.bicep' = {
+  name: 'monitoring'
+  scope: rg
+  params: {
+    location: location
+    tags: tags
+    logAnalyticsName: !empty(logAnalyticsName) ? logAnalyticsName : '${abbrs.operationalInsightsWorkspaces}${resourceToken}'
+    applicationInsightsName: !empty(applicationInsightsName) ? applicationInsightsName : '${abbrs.insightsComponents}${resourceToken}'
+    applicationInsightsDashboardName: !empty(applicationInsightsDashboardName) ? applicationInsightsDashboardName : '${abbrs.portalDashboards}${resourceToken}'
+  }
+}
+
+// Create an App Service Plan to group applications under the same payment plan and SKU
+module appServicePlan './core/host/appserviceplan.bicep' = {
+  name: 'appserviceplan'
+  scope: rg
+  params: {
+    name: !empty(appServicePlanName) ? appServicePlanName : '${abbrs.webServerFarms}${resourceToken}'
+    location: location
+    tags: tags
+    sku: {
+      name: 'B3'
+    }
   }
 }
 
 // The application database
-module sqlServer './app/db.bicep' = if (!useCosmos){
+module sqlServer './app/db.bicep' = if (!useCosmos) {
   name: 'sql'
   scope: rg
   params: {
@@ -128,12 +145,12 @@ module sqlServer './app/db.bicep' = if (!useCosmos){
     databaseName: sqlDatabaseName
     location: location
     tags: tags
-    apiAppName: managedIdentity.outputs.managedIdentityName
+    apiAppName: apiAppManagedIdentity.outputs.managedIdentityName
     keyVaultName: keyVault.outputs.name
     sqlAdminPassword: sqlAdminPassword
-    userassignedmanagedidentityName: sqlAdminManagedIdentity.outputs.managedIdentityName
-    userAssignedManagedIdentityId: sqlAdminManagedIdentity.outputs.managedIdentityId
-    userAssignedManagedIdentityClientId: sqlAdminManagedIdentity.outputs.managedIdentityClientId
+    userassignedmanagedidentityName: principalId
+    userAssignedManagedIdentityClientId: clientID //will be populated from Pre provisioning hook script
+    userAssignedManagedIdentityId: principalType == 'ServicePrincipal' ? principalId : ''
   }
 }
 
@@ -162,7 +179,7 @@ module cosmosRoleContributor 'core/security/role.bicep' = if (useCosmos) {
   scope: rg
   name: 'ai-search-service-contributor'
   params: {
-    principalId: managedIdentity.outputs.managedIdentityPrincipalId
+    principalId: apiAppManagedIdentity.outputs.managedIdentityPrincipalId
     roleDefinitionId: '7ca78c08-252a-4471-8644-bb5ff32d4ba0' //Search Service Contributor
     principalType: 'ServicePrincipal'
   }
@@ -172,48 +189,44 @@ module cosmosAccountRole 'core/security/role-cosmos.bicep' = if (useCosmos){
   scope: rg
   name: 'cosmos-account-role'
   params: {
-    principalId: managedIdentity.outputs.managedIdentityPrincipalId
+    principalId: apiAppManagedIdentity.outputs.managedIdentityPrincipalId
     databaseAccountId: cosmos.outputs.accountId
     databaseAccountName: cosmos.outputs.accountName
   }
 }
 
-// Create an App Service Plan to group applications under the same payment plan and SKU
-module appServicePlan './core/host/appserviceplan.bicep' = {
-  name: 'appserviceplan'
+
+
+// The application frontend
+module web './app/web.bicep' = {
+  name: 'web'
   scope: rg
   params: {
-    name: !empty(appServicePlanName) ? appServicePlanName : '${abbrs.webServerFarms}${resourceToken}'
+    name: !empty(webServiceName) ? webServiceName : '${abbrs.webSitesAppService}web-${resourceToken}'
     location: location
     tags: tags
-    sku: {
-      name: 'B3'
+    applicationInsightsName: monitoring.outputs.applicationInsightsName
+    appServicePlanId: appServicePlan.outputs.id
+  }
+}
+
+// The application backend
+module api './app/api.bicep' = {
+  name: 'api'
+  scope: rg
+  params: {
+    name: !empty(apiServiceName) ? apiServiceName : '${abbrs.webSitesAppService}api-${resourceToken}'
+    location: location
+    tags: tags
+    applicationInsightsName: monitoring.outputs.applicationInsightsName
+    appServicePlanId: appServicePlan.outputs.id
+    keyVaultName: keyVault.outputs.name
+    allowedOrigins: [ web.outputs.SERVICE_WEB_URI ]
+    appSettings: {
+      AZURE_SQL_CONNECTION_STRING_KEY: sqlServer.outputs.connectionStringKey
+      AZURE_CLIENT_ID: apiAppManagedIdentity.outputs.managedIdentityClientId
     }
-  }
-}
-
-// Store secrets in a keyvault
-module keyVault './core/security/keyvault.bicep' = {
-  name: 'keyvault'
-  scope: rg
-  params: {
-    name: !empty(keyVaultName) ? keyVaultName : '${abbrs.keyVaultVaults}${resourceToken}'
-    location: location
-    tags: tags
-    principalId: principalId
-  }
-}
-
-// Monitor application with Azure Monitor
-module monitoring './core/monitor/monitoring.bicep' = {
-  name: 'monitoring'
-  scope: rg
-  params: {
-    location: location
-    tags: tags
-    logAnalyticsName: !empty(logAnalyticsName) ? logAnalyticsName : '${abbrs.operationalInsightsWorkspaces}${resourceToken}'
-    applicationInsightsName: !empty(applicationInsightsName) ? applicationInsightsName : '${abbrs.insightsComponents}${resourceToken}'
-    applicationInsightsDashboardName: !empty(applicationInsightsDashboardName) ? applicationInsightsDashboardName : '${abbrs.portalDashboards}${resourceToken}'
+    userassignedmanagedidentityId: apiAppManagedIdentity.outputs.managedIdentityId
   }
 }
 
@@ -260,3 +273,6 @@ output REACT_APP_WEB_BASE_URL string = web.outputs.SERVICE_WEB_URI
 output USE_APIM bool = useAPIM
 output USE_COSMOS bool = useCosmos
 output SERVICE_API_ENDPOINTS array = useAPIM ? [ apimApi.outputs.SERVICE_API_URI, api.outputs.SERVICE_API_URI ]: []
+output SQLDATABASENAME string = sqlServer.outputs.databaseName
+output SQLSERVERFQDN string = sqlServer.outputs.sqlServerFQDN
+output MSIAPIAPPNAME string = apiAppManagedIdentity.outputs.managedIdentityName

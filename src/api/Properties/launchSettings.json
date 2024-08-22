@@ -14,7 +14,10 @@
       "launchBrowser": false,
       "applicationUrl": "https://localhost:3101;http://localhost:3100",
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "AZURE_KEY_VAULT_ENDPOINT": "https://kv-pl44eczbs2st6.vault.azure.net/",
+        "AZURE_SQL_CONNECTION_STRING_KEY": "",
+        "AZURE_COSMOS_CONNECTION_STRING_KEY": "https://cosmos-keyless-pl44eczbs2st6.documents.azure.com:443/"
       }
     },
     "IIS Express": {

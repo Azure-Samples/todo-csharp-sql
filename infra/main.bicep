@@ -160,28 +160,17 @@ module cosmos './core/database/cosmos/sql/cosmos-sql-db.bicep' = if (useCosmos){
   scope: rg
   params: {
     accountName: !empty(cosmosAccountName) ? cosmosAccountName : 'cosmos-keyless-${resourceToken}'
-    databaseName: 'todo-db'
+    databaseName: 'TodoDb'
     location: location
     keyVaultName: keyVault.outputs.name
     tags: tags
     containers: [
       {
-        name: 'todo'
-        id: 'todo'
-        partitionKey: '/id'
+        name: 'TodoDb'
+        id: 'TodoDb'
+        partitionKey: '/__partitionKey'
       }
     ]
-  }
-}
-
-//cosmos role
-module cosmosRoleContributor 'core/security/role.bicep' = if (useCosmos) {
-  scope: rg
-  name: 'ai-search-service-contributor'
-  params: {
-    principalId: apiAppManagedIdentity.outputs.managedIdentityPrincipalId
-    roleDefinitionId: '7ca78c08-252a-4471-8644-bb5ff32d4ba0' //Search Service Contributor
-    principalType: 'ServicePrincipal'
   }
 }
 
@@ -195,7 +184,15 @@ module cosmosAccountRole 'core/security/role-cosmos.bicep' = if (useCosmos){
   }
 }
 
-
+module userCosmosAccountRole 'core/security/role-cosmos.bicep' = if (useCosmos && !empty(principalId)) {
+  scope: rg
+  name: 'user-cosmos-account-role'
+  params: {
+    principalId: principalId
+    databaseAccountId: cosmos.outputs.accountId
+    databaseAccountName: cosmos.outputs.accountName
+  }
+}
 
 // The application frontend
 module web './app/web.bicep' = {
@@ -223,8 +220,9 @@ module api './app/api.bicep' = {
     keyVaultName: keyVault.outputs.name
     allowedOrigins: [ web.outputs.SERVICE_WEB_URI ]
     appSettings: {
-      AZURE_SQL_CONNECTION_STRING_KEY: sqlServer.outputs.connectionStringKey
+      AZURE_SQL_CONNECTION_STRING_KEY: !useCosmos ? sqlServer.outputs.connectionStringKey : ''
       AZURE_CLIENT_ID: apiAppManagedIdentity.outputs.managedIdentityClientId
+      AZURE_COSMOS_CONNECTION_STRING_KEY: useCosmos ? cosmos.outputs.endpoint : ''
     }
     userassignedmanagedidentityId: apiAppManagedIdentity.outputs.managedIdentityId
   }
@@ -260,7 +258,7 @@ module apimApi './app/apim-api.bicep' = if (useAPIM) {
 }
 
 // Data outputs
-output AZURE_SQL_CONNECTION_STRING_KEY string = sqlServer.outputs.connectionStringKey
+output AZURE_SQL_CONNECTION_STRING_KEY string = !useCosmos ? sqlServer.outputs.connectionStringKey : ''
 
 // App outputs
 output APPLICATIONINSIGHTS_CONNECTION_STRING string = monitoring.outputs.applicationInsightsConnectionString
@@ -273,6 +271,6 @@ output REACT_APP_WEB_BASE_URL string = web.outputs.SERVICE_WEB_URI
 output USE_APIM bool = useAPIM
 output USE_COSMOS bool = useCosmos
 output SERVICE_API_ENDPOINTS array = useAPIM ? [ apimApi.outputs.SERVICE_API_URI, api.outputs.SERVICE_API_URI ]: []
-output SQLDATABASENAME string = sqlServer.outputs.databaseName
-output SQLSERVERFQDN string = sqlServer.outputs.sqlServerFQDN
+output SQLDATABASENAME string = !useCosmos ? sqlServer.outputs.databaseName : ''
+output SQLSERVERFQDN string = !useCosmos ? sqlServer.outputs.sqlServerFQDN : ''
 output MSIAPIAPPNAME string = apiAppManagedIdentity.outputs.managedIdentityName

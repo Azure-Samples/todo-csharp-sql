@@ -20,9 +20,9 @@ namespace SimpleTodo.Api
             return group;
         }
 
-        public static async Task<Ok<IEnumerable<TodoList>>> GetLists(ListsRepository repository, int? skip = null, int? batchSize = null)
+        public static async Task<Ok<IEnumerable<TodoList>>> GetLists(ListsRepository repository, int? skip = null, int? top = null)
         {
-            return TypedResults.Ok(await repository.GetListsAsync(skip, batchSize));
+            return TypedResults.Ok(await repository.GetListsAsync(skip, top));
         }
 
         public static async Task<IResult> CreateList(ListsRepository repository, CreateUpdateTodoList list)

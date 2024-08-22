@@ -29,7 +29,8 @@ resource database 'Microsoft.DocumentDB/databaseAccounts/sqlDatabases@2022-05-15
     properties: {
       resource: {
         id: container.id
-        partitionKey: { paths: [ container.partitionKey ] }
+        partitionKey: { paths: [ container.partitionKey ], kind: 'MultiHash', version: 2 }
+        uniqueKeyPolicy: null
       }
       options: {}
     }

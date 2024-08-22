@@ -9,8 +9,21 @@ builder.Configuration.AddAzureKeyVault(new Uri(builder.Configuration["AZURE_KEY_
 builder.Services.AddScoped<ListsRepository>();
 builder.Services.AddDbContext<TodoDb>(options =>
 {
-    var connectionString = builder.Configuration[builder.Configuration["AZURE_SQL_CONNECTION_STRING_KEY"]];
-    options.UseSqlServer(connectionString, sqlOptions => sqlOptions.EnableRetryOnFailure());
+    var sqlConnectionString = builder.Configuration["AZURE_SQL_CONNECTION_STRING_KEY"];
+
+    if (!string.IsNullOrEmpty(sqlConnectionString))
+    {
+        options.UseSqlServer(sqlConnectionString, sqlOptions => sqlOptions.EnableRetryOnFailure());
+    }
+    else
+    {
+        var cosmosConnectionString = builder.Configuration["AZURE_COSMOS_CONNECTION_STRING_KEY"];
+
+        if (!string.IsNullOrEmpty(cosmosConnectionString))
+        {
+            options.UseCosmos(cosmosConnectionString, new DefaultAzureCredential(), "TodoDb");
+        }
+    }
 });
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();

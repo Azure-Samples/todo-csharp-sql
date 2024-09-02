@@ -42,7 +42,7 @@ module api 'br/public:avm/res/web/site:0.6.0' = {
       linuxFxVersion: linuxFxVersion
       appCommandLine: appCommandLine
     })
-    appSettingsKeyValuePairs: union(appSettings, { SCM_DO_BUILD_DURING_DEPLOYMENT: 'True', ENABLE_ORYX_BUILD: 'True' })
+    appSettingsKeyValuePairs: union(appSettings, { ENABLE_ORYX_BUILD: true })
     logsConfiguration: {
       applicationLogs: { fileSystem: { level: 'Verbose' } }
       detailedErrorMessages: { enabled: true }

@@ -32,19 +32,19 @@ app.UseCors(policy =>
     policy.AllowAnyMethod();
 });
 
-// Swagger UI
-app.UseSwaggerUI(options =>
-{
-    options.SwaggerEndpoint("./openapi.yaml", "v1");
-    options.RoutePrefix = "";
-});
-
+// This must come BEFORE UseSwaggerUI
 app.UseStaticFiles(new StaticFileOptions
 {
     // Serve openapi.yaml file
     ServeUnknownFileTypes = true,
 });
 
+// Swagger UI
+app.UseSwaggerUI(options =>
+{
+    options.SwaggerEndpoint("./openapi.yaml", "v1");
+    options.RoutePrefix = "";
+});
 
 app.MapGroup("/lists")
     .MapTodoApi()
